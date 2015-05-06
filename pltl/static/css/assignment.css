@@ -1,0 +1,14 @@
+#assignmentSection .tabs.vertical {
+width:100%;
+max-width: 100%;
+}
+
+#assignmentSection  > .row {
+	width:100%;
+	max-width: 100%;
+	margin-top: 10px;
+}
+#assignmentSection .row  .large-6.columns.name-field{
+float:left;
+}
+

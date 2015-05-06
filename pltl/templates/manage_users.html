@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block linkscript %}
+    <link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>
+    <link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
+    <script src="{% static "js/Assignment.js" %}"></script>
+{% endblock %}
+{% block username %}Welcome {{request.user.fname}}{% endblock %}
+{% block logout %}    
+{%if user.is_authenticated%}
+    <li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
+{%endif%}
+{% endblock %}
+      
+{% block content %}
+<p>Hello, {{request.user.fname}} {{request.user.lname}}</p>
+
+<!--
+{%if enrolled_students %}
+{% for em in enrolled_students %}
+    <td><input type = 'submit' class="radius button success medium" id = "btnNew" value="Make Student"></td> 
+    <label for="Status{{ forloop.counter}}">{{ em.status }}</label><br/>
+{% endfor %}
+{% endif %}
+-->
+
+<!--
+<h1>TESTING</h1>
+{%if enrolled_students %}
+{% for em in enrolled_students %}
+    <p>{{ em.email}}</p>
+    <p>{{ em.class_id }}</p>
+    <p>{{ em.role}}</p>
+    <p>{{ em.status }}</p>
+    <br>
+{% endfor %}
+{% endif %}
+-->
+
+{% if peer_leaders %}
+<div align="center" class="row">
+	<h4>Peer Leaders</h4>
+        <table>
+            <tr>
+                <th style='width:120px'>Peer Leader</th>
+                <th style='width:100px'>Role</th>
+            </tr>
+                {% for p in peer_leaders %}
+                    <tr> 
+                        <td>{{ p.get_full_name }}</td>
+                        <form data-abide action = "{% url "User:class_student_info" %}" method='POST'>
+                        {% csrf_token %}
+                        <td><input type='submit' class="radius button success medium" id="btnNew" value="Make Student" name="make_student"></td> 
+                        <td><input type='submit' class="radius button success medium" id="btnNew" value="Add Student" name="make_student"></td> 
+                        <td><input type=hidden name='email' value= '{{ p.email }}'></td>
+                        </form>
+                    </tr>
+                {% endfor %}
+        </table>
+</div>
+{% endif %}
+
+<div align="center" class="row">
+	<h4>Users</h4>
+        <table>
+            <tr>
+                <th style='width:120px'>Student</th>
+                <th style='width:10px'>Status</th>
+                <th style='width:100px'>Role</th>
+                <th style='width:120px'>Peer Leader</th>
+            </tr>
+            {% if students %}
+                {% for s in students %}
+                    <tr> 
+                        <td>{{ s.get_full_name }}</td>
+                        <form data-abide action = "{% url "User:class_student_info" %}" method='POST'>
+                        {% csrf_token %}
+                        <td><input type='submit' class="radius button success medium" id="btnNew" value="Deactivate" name="deactivate"></td> 
+                        <td><input type='submit' class="radius button success medium" id="btnNew" value="Make Peer Leader" name="make_peer_leader"></td> 
+                        <td><select>
+                        <ul>
+                            {% for p in peer_leaders %}
+                                 <li><option>{{ p.get_full_name }}</option><li>
+                            {% endfor %}
+                        </ul>
+                        </select></td>
+                        <td><input type=hidden name='email' value= '{{ s.email }}'></td>
+                        </form>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+</div>
+
+{% if inactives %}
+<div align="center" class="row">
+	<h4>Inactive Students</h4>
+        <table>
+            <tr>
+                <th style='width:120px'>Student</th>
+                <th style='width:10px'>Status</th>
+            </tr>
+                {% for i in inactives %}
+                    <tr> 
+                        <td>{{ i.get_full_name }}</td>
+                        <form data-abide action = "{% url "User:class_student_info" %}" method='POST'>
+                        {% csrf_token %}
+                        <td><input type='submit' class="radius button success medium" id="btnNew" value="Activate" name="activate"></td> 
+                        <td><input type=hidden name='email' value= '{{ i.email }}'></td>
+                        </form>
+                    </tr>
+                {% endfor %}
+        </table>
+</div>
+{% endif %}
+{% endblock %}

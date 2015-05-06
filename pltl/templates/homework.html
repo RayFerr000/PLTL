@@ -1,0 +1,36 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  	<head>
+    	<meta charset="utf-8" />
+    	<title>PLTL | Classes</title>
+  	</head>
+  	<body>
+      {% if ass_info %}
+        {% for ass in ass_info %}
+              <p><h1>{{ ass.assignment_name }}</h1></p>
+              <p>
+                <h3>Click here to view the assignment : {{ ass.assignmentfile}}</h3>
+                <h3>Uploaded On : {{ ass.pub_date}}</h3>
+                <h3>Due Date : {{ ass.due_date}}</h3>
+                <h3>Total Grade : {{ ass.total_grade}}</h3>
+        {% endfor %}
+       
+          <form method = 'POST' action = "" enctype="multipart/form-data"> {% csrf_token %}
+            <h3>{{ form.as_p }}</h3>
+            <input type = 'submit' value="Upload Homework"> 
+          </form>
+              </p>
+        {% endif %}
+        <p><h2>Homeworks Submitted : </h2></p>
+        {% if homework_info %}
+            {% for homework in homework_info %}          
+              <p>
+                <h3>Submitted Homework : <a target=\"_blank\" href="{{ homework.homework_soln.url}}" title=\"\">{{ homework.homework_soln.name }}</a></h3>
+                <h3>Submitted On : {{ homework.submitted_timestamp}}</h3>
+              <p>
+            {% endfor %}
+        {% else %}
+            <p><h3>Nothing to display. No homeworks submitted yet</h3></p>
+        {% endif %}
+  	</body>
+</html>

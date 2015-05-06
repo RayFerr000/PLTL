@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block linkscript %}
+
+<link rel="stylesheet" href="{% static "css/font-awesome.css" %}"></link>
+<link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>
+<link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.min.css" %}"></link>
+<link rel="stylesheet" href="{% static "css/dataTables.foundation.css" %}"></link>
+<script src="{% static "js/vendor/modernizr.js" %}"></script>
+<script src="{% static "js/vendor/jquery.js" %}"></script>
+<script src="{% static "js/vendor/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "js/vendor/dataTables.foundation.js" %}"></script>
+<script src="{% static "js/foundation/foundation-datepicker.js" %}"></script>
+<script src="{% static "js/Assignment.js" %}"></script>
+<script>
+var class_id = "\{{class_id}}";
+</script>
+
+{% endblock %}
+{% block username %}Welcome {{request.user.fname}}{% endblock %}
+{% block logout %}    
+{%if user.is_authenticated%}
+<li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
+{%endif%}
+{% endblock %}
+{% block content%}
+<div id='assignmentSection'>
+<div class="row">
+   {{class_id}}
+   <div style="padding:10px;">
+      <table id="assignmentListDetails" class="display" cellspacing="0" width="100%"></table>
+   </div>
+   <ul>
+      <li>
+         <div   class="row">
+            <section class="small-4 columns">
+               <!-- Upload form. Note enctype attribute! -->
+               <form action="{% url 'User:Class:assignment' %}{{class_id}}" method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <input type="hidden" name="class_id" value="{{class_id}}">
+                  <div class="large-6 row">
+                     <div class="large-4 columns">
+                        <label>Assignment Name:</label>
+                     </div>
+                     <div class="large-6 columns name-field" >
+                        {{ form.assignment_name}}
+                     </div>
+                  </div>
+                  <div class="large-6 row">
+                     <div class="large-4 columns" >
+                        <label>Publish Date:</label>
+                     </div>
+                     <div class="large-6 columns name-field">
+                        {{ form.pub_date}}
+                     </div>
+                  </div>
+                  <div class="large-6 row">
+                     <div class="large-4 columns" >
+                        <label>Due Date:</label>
+                     </div>
+                     <div class="large-6 columns name-field" >
+                        {{ form.due_date}}                       
+                     </div>
+                  </div>
+                  <div class="large-6 row">
+                     <div class="large-4 columns" >
+                        <label>Total Grade:</label>
+                     </div>
+                     <div class="large-6 columns name-field" >
+                        {{ form.total_grade}}                       
+                     </div>
+                  </div>
+                  <div class="large-6 row">
+                     <div class="large-4 columns" >
+                        <label>Assignment files:</label>
+                     </div>
+                     <div class="large-6 columns name-field">
+                        {{ form.assignmentfile}}
+                     </div>
+                  </div>
+                  <p><input type="submit" value="Upload" /></p>
+               </form>
+            </section>
+         </div>
+      </li>
+   </ul>
+</div>
+<div>
+{% endblock %}

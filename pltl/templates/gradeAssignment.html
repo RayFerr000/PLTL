@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block linkscript %}
+    <link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>
+    <link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
+    
+
+{% endblock %}
+{% block username %}Welcome {{request.user.fname}}{% endblock %}
+{% block logout %}    
+{%if user.is_authenticated%}
+    <li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
+{%endif%}
+{% endblock %}
+{% block content %}
+
+	<div align="center" class="row">
+	        <h4>Assignment:</h4>
+            
+            
+	        <table id = 'table'>
+	            <tr>
+	                <th style='width:220px'>Student</th>
+	                <th style='width:5px'>Grade</th>
+	                <th style='width:520px'>Feedback</th>
+	            </tr>
+	            {%if students%}
+	                    
+	            	    {%for data,student in students.iteritems%}
+
+	            	        <form  onsubmit = "return false;" id="{{forloop.counter}}">
+	            	        	{% csrf_token %}
+
+		                        <tr>
+				            	<td>{{student.name}}</td>
+                                {%ifequal student.grade None%}
+					                <td><input type=text  size="1"  id ='Grade{{forloop.counter}}' name='Grade' maxlength="1" /></td>
+					                <td><input type=text  size="50" id = 'Feedback{{forloop.counter}}' name='Feedback' /></td>
+				                
+				                {%else%}
+					                <td><input type=text  size="1"  id ='Grade{{forloop.counter}}' name='Grade' maxlength="1" value = "{{student.grade}}"/></td>
+					                <td><input type=text  size="50" id = 'Feedback{{forloop.counter}}' name='Feedback' value = "{{student.feedback}}"/></td>
+				                
+				                {%endifequal%}
+				                    <input type=hidden id = 'email{{forloop.counter}}' name = "email" value = "{{student.email}}">
+					                <td><button type='submit' class="radius button success medium"  id='Submit{{forloop.counter}}'onclick=submitGrade("{{forloop.counter}}")>Save</button></td>
+	                                <td><img src="{% static "img/check.png" %}" id='check{{forloop.counter}}' style="visibility:hidden"></td>
+					                
+		                        </tr>
+		                    </form>
+
+	                    {%endfor%}
+	                    
+			    {%endif%}
+	        </table>
+	</div>
+<script type = "text/javascript">
+  function submitGrade(id) {
+    
+  	var grade = "#" + 'Grade' + id;
+  	var feedback = '#' + 'Feedback' + id;
+  	var email =  '#' + 'email' + id;
+ 
+  	$.ajax({
+  		type : "POST",
+  		url  : "http://localhost:8000/Class/Assignments/Grade",
+  		dataType : "json",
+  		async : true,
+  		data : {
+  			csrfmiddlewaretoken : '{{ csrf_token }}',
+  			Grade : $(grade).val(),
+  			Feedback: $(feedback).val(),
+            email : $(email).val()
+
+  		},
+        
+  		success:function(){
+                       
+  			$('#'+'check'+id).css("visibility", "visible");
+  		}
+
+  	});
+  	
+  	
+  }
+
+</script>
+{% endblock %}

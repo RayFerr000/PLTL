@@ -1,0 +1,33 @@
+Python
+---------
+beautifulsoup4
+coverage
+lettuce
+Flask
+django
+django-yearlessdate
+djangorestframework
+mercurial
+mock
+nose
+pip
+Pygments #syntax highlightin in the bitbucket wiki
+pylint
+requests
+selenium
+setuptools
+
+Javascript
+------------
+to install npm
+$ curl http://nodejs.org/dist/node-latest.tar.gz | tar xvz
+$ cd node-v*
+$ ./configure --prefix=$VIRTUAL_ENV
+$ make install
+
+list packages with npm ls
+
+npm install -g bower
+
+bower list -- list the bower packages
+bower install jquery

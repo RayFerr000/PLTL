@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+      
+{% block content %}
+
+    <div class="row">
+      <div class="large-12 columns">
+        <div class="row">
+          <div class="small-12 large-12 columns">&nbsp;</div>
+        </div>
+      
+        <div class="row">
+          <div class="large-12 columns">        
+            <div class="panel">
+              <div class="large-6 columns">
+                <h4>Welcome to Peer Led Team Learning!</h4>
+              </div>
+              <div class="large-6 columns">
+                <div class="large-8 columns">
+                  <a href="#" class="radius button small right" data-reveal-id="LoginModal"><strong>Login</strong></a>
+
+                  <div id="LoginModal" class="reveal-modal" data-reveal>
+                    <form data-abide action = " {% url "User:login"%}" method = "POST">
+                      {% csrf_token%}
+                      <h4>Log In</h4>
+                      <hr/>
+
+                      <div class="row">
+                        <div class="large-12 columns" class="email-field">
+                          <label>Email:
+                            <input name="email" type="email" placeholder="example@dot.com" required/>
+                          </label>
+                          <small class="error">Email is required and must be in a valid format</small>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="large-12 columns" class="name-field">
+                          <label>Password:
+                            <input name="password"type="password" placeholder="" required/>
+                          </label>
+                          <small class="error">Please enter password</small>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <input id="cbRemember" type="checkbox" checked></input><label for="cbRemember">Remember me</label>
+                      </div>
+
+                      <div class="row">
+                        <div class="large-9 columns">
+                          <ul class="inline-list left">
+                            <li><a href="#">Forgot your password?</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="row">  
+                        <div class="large-12 columns">
+                          <button class="radius button success small right"><strong>Login</strong></a>  
+                        </div>  
+                      </div>                    
+                    <a class="close-reveal-modal">&#215;</a>
+                  </form>
+                </div>
+              </div>
+
+
+              <div class="large-4 columns">
+                <a href="#" class="radius button small right" data-reveal-id="SignUpModal"><strong>Sign Up</strong></a>
+
+                  <div id="SignUpModal" class="reveal-modal2" data-reveal>
+
+                        <div align="center"><h2>Create an Account</h2></div>
+                        <hr/>
+                        <div class="medium-6 medium-centered large-centered large-6 columns">
+                          <form data-abide action = "{% url 'User:user_signup_save' %}" method="POST">
+                            {%csrf_token%}
+                            <div class="name-field">
+                              <label>First Name</label>
+                              <input name="fname"type="text" required></input>
+                              <small class="error" data-error-message="">A first and last name is required.</small>
+                            </div>
+                            <div class="name-field">
+                              <label>Last Name</label>
+                              <input name="lname"type="text" required></input>
+                              <small class="error" data-error-message="">A first and last name is required.</small>
+                            </div>
+                            <div class="email-field">
+                              <label>Email</label>
+                              <input name="email" type="email" placeholder="example@dot.com" required></input>
+                              <small class="error">An email address is required.</small>
+                            </div>
+                            <div class="password">
+                              <label for="password">Password</label>
+                              <input id="password" type="password" required="" name="password"></input>
+                              <small class="error"></small>
+                            </div>
+                            <div class="password2">
+                              <label for="confirmPassword">Confirm Password</label>
+                              <input id="confirmPassword" type="password" data-equalto="password" required="" name="confirmPassword" data-invalid=""></input>
+                              <small class="error" data-error-message="">Passwords must match.</small>
+                            </div>
+                            <div class="terms">
+                              <label><small>By creating an account you have read and agree to the <a href="#">terms and conditions</a>.</small></label>
+                              <input id="checkbox1" type="checkbox" checked required></input><label for="checkbox1">I Agree</label>
+                              <small class="error">You must agree to the terms and conditions.</small>
+                            </div>
+                            <br />
+                            <br />         
+                            <button class="radius button submit small" onclick=''><strong>Sign Up</strong></button>
+                            <br />
+                            <small>Sign in with <a href="#">Facebook</a>, <a href="#">Google</a>, or <a href="#">Twitter</a>.</small>
+                          </form>
+                        </div>
+                
+                    <a class="close-reveal-modal">&#215;</a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+          </div>
+        </div>          
+      </div>
+    </div>
+     
+    <div class="row">
+      <div class="large-12 columns">
+        <div id="slider">
+          <img src="{% static "img/Image1.png" %}">
+        </div>          
+        <hr/>
+      </div>
+    </div>
+       
+    <div class="row">
+      <div class="large-3 columns">
+        <h4></h4>
+        <p>Peer Led Team Learning is designed to connect Students, Peer Leaders and Instructors so every student can get the help they need when they need it.</p>
+      </div>
+        
+      <div class="large-3 columns">
+        <h4></h4>
+        <p>It impoverishes the learning environment if students don't talk to other students. Peer Led Team Learning makes it very easy to get a discussion going.</p>
+      </div>
+        
+      <div class="large-6 columns">
+        <h4></h4>
+        <p><li>Wiki style format enables collaboration in a single space.</li></p>
+        <p><li>Instructors endorse answers to keep the class on track.</li></p>
+        <p><li>Questions and posts needing immediate action are highlighted.</li></p>
+        <p><li>Anonymous posting encourages every student to participate.</li></p>
+        <p><li>Highly customizable online polls.</li></p>
+      </div>
+    </div>
+     
+{% endblock %}
