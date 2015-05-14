@@ -4,7 +4,7 @@ from datetime import date, timedelta
 
 class AssignmentForm(forms.Form):
     """ This form takes input from User for uploading assignment"""
-    assignment_name = forms.CharField(widget = forms.TextInput(attrs={'required':'True'}))
+    assignment_name = forms.CharField(widget=forms.TextInput(attrs={'required':'True'}))
     pub_date = forms.DateField(initial=date.today,
                widget=forms.DateInput(format="%Y-%m-%d", attrs={'readonly':'readonly'}))
     due_date = forms.DateField(initial=(date.today() + timedelta(days=8)),

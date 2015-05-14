@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+<title>PLTL | Welcome </title>   
 {% block linkscript %}
-
 <link rel="stylesheet" href="{% static "css/font-awesome.css" %}"></link>
-<link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>
+<!--<link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>-->
 <link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
-<link rel="stylesheet" href="{% static "css/jquery.dataTables.min.css" %}"></link>
-<link rel="stylesheet" href="{% static "css/dataTables.foundation.css" %}"></link>
+<!--
+   <link rel="stylesheet" href="{% static "css/jquery.dataTables.min.css" %}"></link>
+   <link rel="stylesheet" href="{% static "css/dataTables.foundation.css" %}"></link>
+   -->
+<script src="{% static "js/vendor/jquery.modal.js" %}" type="text/javascript" charset="utf-8"></script>
 <script src="{% static "js/vendor/modernizr.js" %}"></script>
 <script src="{% static "js/vendor/jquery.js" %}"></script>
 <script src="{% static "js/vendor/jquery.dataTables.min.js" %}"></script>
@@ -14,77 +17,59 @@
 <script src="{% static "js/foundation/foundation-datepicker.js" %}"></script>
 <script src="{% static "js/Assignment.js" %}"></script>
 <script>
-var class_id = "\{{class_id}}";
-</script>
+   var class_id = "\{{class_id}}";
+   function redirect() 
+   {
+      window.location = "/User/Class/createAssignment/"+class_id   
+   }
+   function mydirect() {
+    window.location = "/User/"+class_id+"/manage/"
+    }
+   function redirect_view_all_class_grades() 
+   {
+      window.location = "/User/Class/view_all_class_grades/"+class_id   
+   }
+   function redirect_view_all_grades() 
+   {
+      window.location = "/User/Class/view_all_grades/"+class_id   
+   }
 
+</script>
 {% endblock %}
 {% block username %}Welcome {{request.user.fname}}{% endblock %}
 {% block logout %}    
 {%if user.is_authenticated%}
+<li><a href = "/User/home"><strong>Home</strong></a></li>
 <li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
 {%endif%}
 {% endblock %}
 {% block content%}
-<div id='assignmentSection'>
+<div id='assignmentListSection'>
+<div align="center" class"row" id="classHomeTitle">
+   <h1>Class : {{class_id}}</h1>    
+</div>
+
 <div class="row">
-   {{class_id}}
    <div style="padding:10px;">
       <table id="assignmentListDetails" class="display" cellspacing="0" width="100%"></table>
    </div>
-   <ul>
-      <li>
-         <div   class="row">
-            <section class="small-4 columns">
-               <!-- Upload form. Note enctype attribute! -->
-               <form action="{% url 'User:Class:assignment' %}{{class_id}}" method="post" enctype="multipart/form-data">
-                  {% csrf_token %}
-                  <input type="hidden" name="class_id" value="{{class_id}}">
-                  <div class="large-6 row">
-                     <div class="large-4 columns">
-                        <label>Assignment Name:</label>
-                     </div>
-                     <div class="large-6 columns name-field" >
-                        {{ form.assignment_name}}
-                     </div>
-                  </div>
-                  <div class="large-6 row">
-                     <div class="large-4 columns" >
-                        <label>Publish Date:</label>
-                     </div>
-                     <div class="large-6 columns name-field">
-                        {{ form.pub_date}}
-                     </div>
-                  </div>
-                  <div class="large-6 row">
-                     <div class="large-4 columns" >
-                        <label>Due Date:</label>
-                     </div>
-                     <div class="large-6 columns name-field" >
-                        {{ form.due_date}}                       
-                     </div>
-                  </div>
-                  <div class="large-6 row">
-                     <div class="large-4 columns" >
-                        <label>Total Grade:</label>
-                     </div>
-                     <div class="large-6 columns name-field" >
-                        {{ form.total_grade}}                       
-                     </div>
-                  </div>
-                  <div class="large-6 row">
-                     <div class="large-4 columns" >
-                        <label>Assignment files:</label>
-                     </div>
-                     <div class="large-6 columns name-field">
-                        {{ form.assignmentfile}}
-                     </div>
-                  </div>
-                  <p><input type="submit" value="Upload" /></p>
-               </form>
-            </section>
-         </div>
-      </li>
-   </ul>
+   <div id="buttonsDiv" class="row">
+      {%if Role == "Instructor" %}	
+         
+         {% csrf_token %}
+            <input type="submit" class="radius button default medium" value="Upload Assignment" onclick = redirect() />
+            &nbsp;&nbsp;&nbsp;
+            <input type="submit" class="radius button default medium" id="manage"value="Manage Students" onclick=mydirect() />
+            &nbsp;&nbsp;&nbsp;
+            <input type="submit" class="radius button default medium" value="View All Grades" onclick = "redirect_view_all_class_grades()"/> 
+         {%elif Role == "Peer Leader"%}
+            <input type=hidden id = 'isPeerLeader'>
+            <input type="submit" class="radius button success medium" value="View All Grades" onclick = "redirect_view_all_class_grades()"/>
+         {%elif Role == "Student"%} 
+            <input type="submit" class="radius button success medium"  value="View All Grades" onclick = "redirect_view_all_grades()" />
+               
+      {%endif%}
+     
+   </div>
 </div>
-<div>
 {% endblock %}

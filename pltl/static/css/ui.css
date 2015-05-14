@@ -655,7 +655,8 @@ p.vevent abbr {
     border-bottom: 1px dotted #ccc;
     color: #333;
     cursor: help;
-    font-weight: bold;
+    font-weight: normal;
+    font-size: 0.8rem;
 }
 .has-tip:hover {
     border-bottom: 1px dotted #0593dc;
@@ -666,8 +667,8 @@ p.vevent abbr {
     border-radius: 4px;
     color: #fff;
     display: none;
-    font-size: 1.2rem;
-    font-weight: bold;
+    font-size: 0.8rem;
+    font-weight: normal;
     line-height: normal;
     padding: 5px;
     position: absolute;
@@ -713,7 +714,7 @@ p.vevent abbr {
 }
 .tooltip.noradius {
     border-radius: 0;
-}
+}*/
 .has-tip.opened {
     border-bottom: 1px dotted #0593dc !important;
     color: #0192dd !important;
@@ -721,6 +722,6 @@ p.vevent abbr {
 .tap-to-close {
     color: #888;
     display: block;
-    font-size: 1rem;
+    font-size: 0.8rem;
     font-weight: normal;
 }

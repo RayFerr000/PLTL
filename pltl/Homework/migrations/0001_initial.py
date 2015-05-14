@@ -21,6 +21,7 @@ class Migration(migrations.Migration):
                 ('submitted_timestamp', models.DateTimeField(auto_now_add=True)),
                 ('grade', models.CharField(max_length=3, null=True, blank=True)),
                 ('feedback', models.CharField(max_length=300, null=True, blank=True)),
+                ('graded_by', models.CharField(max_length=50, null=True, blank=True)),
                 ('assignment_id', models.ForeignKey(to='Assignment.Assignment')),
             ],
             options={

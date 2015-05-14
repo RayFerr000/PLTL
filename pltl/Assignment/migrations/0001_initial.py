@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import Assignment.models
 
 
 class Migration(migrations.Migration):
@@ -19,7 +20,7 @@ class Migration(migrations.Migration):
                 ('pub_date', models.DateField(verbose_name=b'Date Published')),
                 ('due_date', models.DateField(verbose_name=b'Due Date')),
                 ('total_grade', models.IntegerField(default=0)),
-                ('assignmentfile', models.FileField(null=True, upload_to=b'static/documents', blank=True)),
+                ('assignmentfile', models.FileField(null=True, upload_to=Assignment.models.get_upload_file_name, blank=True)),
                 ('class_id', models.ForeignKey(to='Class.Class', to_field=b'class_id')),
             ],
             options={

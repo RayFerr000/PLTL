@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block linkscript %}
-    <link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>
     <link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
     <script src="{% static "js/Assignment.js" %}"></script>
 {% endblock %}
@@ -11,35 +10,30 @@
     <li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
 {%endif%}
 {% endblock %}
-      
 {% block content %}
-<p>Hello, {{request.user.fname}} {{request.user.lname}}</p>
+<p>{{ show }}</p>
+{% if show %}
 
-<!--
-{%if enrolled_students %}
-{% for em in enrolled_students %}
-    <td><input type = 'submit' class="radius button success medium" id = "btnNew" value="Make Student"></td> 
-    <label for="Status{{ forloop.counter}}">{{ em.status }}</label><br/>
-{% endfor %}
-{% endif %}
--->
+<div align="left">
+<form  action="/User/Class/{{ class_id }}">
+<input type='submit' class="radius button default medium" id="btnNew" value="Back">
+</div>
+</form>
 
-<!--
-<h1>TESTING</h1>
-{%if enrolled_students %}
-{% for em in enrolled_students %}
-    <p>{{ em.email}}</p>
-    <p>{{ em.class_id }}</p>
-    <p>{{ em.role}}</p>
-    <p>{{ em.status }}</p>
-    <br>
-{% endfor %}
-{% endif %}
--->
+<div align="right">
+<form  action="{% url "User:group_view" class_id %}">
+{% csrf_token %}
+<input type='submit' class="radius button default medium" id="btnNew" value="Group View">
+</div>
+</form>
+
+<div align="center">
+<h3>Class: {{ class_id }}</h3>
+</div>
 
 {% if peer_leaders %}
 <div align="center" class="row">
-	<h4>Peer Leaders</h4>
+    <h4>Peer Leaders</h4>
         <table>
             <tr>
                 <th style='width:120px'>Peer Leader</th>
@@ -48,11 +42,11 @@
                 {% for p in peer_leaders %}
                     <tr> 
                         <td>{{ p.get_full_name }}</td>
-                        <form data-abide action = "{% url "User:class_student_info" %}" method='POST'>
+                        <form data-abide action="{% url "User:class_student_info" class_id %}" method='POST'>
                         {% csrf_token %}
-                        <td><input type='submit' class="radius button success medium" id="btnNew" value="Make Student" name="make_student"></td> 
-                        <td><input type='submit' class="radius button success medium" id="btnNew" value="Add Student" name="make_student"></td> 
-                        <td><input type=hidden name='email' value= '{{ p.email }}'></td>
+                        <td><input type='submit' class="radius button secondary medium" id="btnNew" value="Student" name="make_student"></td> 
+                        <input type=hidden name='email' value= '{{ p.email }}'>
+                        <input type=hidden name='class_id' value= '{{ enrolled.0.class_id }}'>
                         </form>
                     </tr>
                 {% endfor %}
@@ -60,8 +54,9 @@
 </div>
 {% endif %}
 
+{% if enrolled_students %}
 <div align="center" class="row">
-	<h4>Users</h4>
+    <h4>Enrolled Students</h4>
         <table>
             <tr>
                 <th style='width:120px'>Student</th>
@@ -69,48 +64,49 @@
                 <th style='width:100px'>Role</th>
                 <th style='width:120px'>Peer Leader</th>
             </tr>
-            {% if students %}
-                {% for s in students %}
-                    <tr> 
-                        <td>{{ s.get_full_name }}</td>
-                        <form data-abide action = "{% url "User:class_student_info" %}" method='POST'>
-                        {% csrf_token %}
-                        <td><input type='submit' class="radius button success medium" id="btnNew" value="Deactivate" name="deactivate"></td> 
-                        <td><input type='submit' class="radius button success medium" id="btnNew" value="Make Peer Leader" name="make_peer_leader"></td> 
-                        <td><select>
-                        <ul>
-                            {% for p in peer_leaders %}
-                                 <li><option>{{ p.get_full_name }}</option><li>
-                            {% endfor %}
-                        </ul>
-                        </select></td>
-                        <td><input type=hidden name='email' value= '{{ s.email }}'></td>
-                        </form>
-                    </tr>
-                {% endfor %}
-            {% endif %}
-        </table>
+            {% for e in enrolled_students %}
+                <tr> 
+                    <td>{{ e.get_full_name }}</td>
+                    <form data-abide action = "{% url "User:class_student_info" class_id %}" method='POST'>
+                    {% csrf_token %}
+                    <td><input type='submit' class="radius button secondary medium" id="btnNew" value="Remove" name="remove"></td> 
+                    <td><input type='submit' class="radius button success medium" id="btnNew" value="Peer Leader" name="make_peer_leader"></td> 
+                    <td><select name="student_leader">
+                        {% for p in peer_leaders %}
+                             <option value='{{ p.email }}'>{{ p.get_full_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type='submit' class="radius button success medium" id="btnNew" value="Add" name="student_led"></td>
+                    <input type=hidden name='email' value= '{{ e.email }}'>
+                    <input type=hidden name='class_id' value= '{{ enrolled.0.class_id }}'>
+                    </form>
+                </tr>
+        {% endfor %}
+    </table>
 </div>
+{% endif %}
 
-{% if inactives %}
+{% if registered_students %}
 <div align="center" class="row">
-	<h4>Inactive Students</h4>
+	<h4>Registered Students</h4>
         <table>
             <tr>
                 <th style='width:120px'>Student</th>
                 <th style='width:10px'>Status</th>
             </tr>
-                {% for i in inactives %}
+                {% for r in registered_students %}
                     <tr> 
-                        <td>{{ i.get_full_name }}</td>
-                        <form data-abide action = "{% url "User:class_student_info" %}" method='POST'>
+                        <td>{{ r.get_full_name }}</td>
+                        <form data-abide action = "{% url "User:class_student_info" class_id %}" method='POST'>
                         {% csrf_token %}
-                        <td><input type='submit' class="radius button success medium" id="btnNew" value="Activate" name="activate"></td> 
-                        <td><input type=hidden name='email' value= '{{ i.email }}'></td>
+                        <td><input type='submit' class="radius button success medium" id="btnNew" value="Enroll" name="enroll"></td> 
+                        <input type=hidden name='email' value= '{{ r.email }}'>
+                        <input type=hidden name='class_id' value= '{{ enrolled.0.class_id }}'>
                         </form>
                     </tr>
                 {% endfor %}
         </table>
 </div>
+{% endif %}
 {% endif %}
 {% endblock %}

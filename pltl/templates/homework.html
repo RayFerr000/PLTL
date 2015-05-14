@@ -1,36 +1,117 @@
-<!doctype html>
-<html class="no-js" lang="en">
-  	<head>
-    	<meta charset="utf-8" />
-    	<title>PLTL | Classes</title>
-  	</head>
-  	<body>
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %} PLTL | Homework Submission{% endblock %}
+{% block linkscript %}
+    <link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>
+    <link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
+    <script src="{% static "js/Assignment.js" %}"></script>
+{% endblock %}
+{% block username %}Welcome {{request.user.fname}}{% endblock %}
+{% block logout %}    
+{%if user.is_authenticated%}
+    <li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
+{%endif%}
+{% endblock %}
+{% block content %}
+<ul class="nice tabs-content contained">
+  <div class="row">
+    <table>
       {% if ass_info %}
+        <p>
         {% for ass in ass_info %}
-              <p><h1>{{ ass.assignment_name }}</h1></p>
-              <p>
-                <h3>Click here to view the assignment : {{ ass.assignmentfile}}</h3>
-                <h3>Uploaded On : {{ ass.pub_date}}</h3>
-                <h3>Due Date : {{ ass.due_date}}</h3>
-                <h3>Total Grade : {{ ass.total_grade}}</h3>
+               <font size="5">{{ ass.assignment_name }} :</font><br>   
+               <tr>
+                <td>
+                  Click to view : 
+                 </td>
+                  {% if ass.assignmentfile %} 
+                    <td>
+                        <a target=\"_blank\" href="{{ ass.assignmentfile.url}}" title=\"\">{{ ass_name }}</a>
+                    </td>
+                  {% else %}
+                    <td>
+                        No Assignment Uploaded
+                    </td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td>
+                  Uploaded On :  
+                </td>  
+                <td>
+                   {{ ass.pub_date}} 
+                </td>               
+                </tr>
+                <tr>
+                  <td>
+                    <font color="red">Due Date : </font> 
+                  </td>
+                  <td>
+                    <font color="red">{{ ass.due_date}}</font> 
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                  Total Grade : 
+                </td>
+                 <td>
+                  {{ ass.total_grade}}
+                </td>
+                </tr> 
+          </table>
         {% endfor %}
-       
-          <form method = 'POST' action = "" enctype="multipart/form-data"> {% csrf_token %}
-            <h3>{{ form.as_p }}</h3>
-            <input type = 'submit' value="Upload Homework"> 
+
+        {% if not homework_info %}
+        <div class="large-12 row">
+          <div class="large-3 columns" >
+          <form data-abide method = 'POST' action = "{% url "homework_submission" %}{{ ass_id }}" enctype="multipart/form-data"> {% csrf_token %}
+            <label for="homework_soln">Select a file : </label>
+            <input id="homework_soln" type="file" name="homework_soln" required>
+            <small class="error">Please select a file</small>
+            <input type = 'submit' class="radius button success medium" value="Upload Homework"> 
           </form>
-              </p>
+          </div>
+        </div>
+        </p>
         {% endif %}
-        <p><h2>Homeworks Submitted : </h2></p>
-        {% if homework_info %}
-            {% for homework in homework_info %}          
-              <p>
-                <h3>Submitted Homework : <a target=\"_blank\" href="{{ homework.homework_soln.url}}" title=\"\">{{ homework.homework_soln.name }}</a></h3>
-                <h3>Submitted On : {{ homework.submitted_timestamp}}</h3>
-              <p>
-            {% endfor %}
-        {% else %}
-            <p><h3>Nothing to display. No homeworks submitted yet</h3></p>
-        {% endif %}
-  	</body>
-</html>
+      {% endif %}
+    
+        <br>
+        <p>
+          <font size="5">Submitted homework :</font><br>
+          <table>
+            {% if homework_info %}
+            <tr>
+                  <th style='width:200px'>Submitted Homework </th>
+                  <th style='width:200px'>Submitted On </th>
+                  <th style='width:200px'>Grade</th>
+                  <th style='width:200px'>Feedback</th>
+            </tr>
+              {% for homework in homework_info %}
+              <tr>   
+                  <td>       
+                    <a target=\"_blank\" href="{{ homework.homework_soln.url}}" title=\"\">{{ homework_name }}</a>
+                  </td>
+                  <td>
+                    {{ homework.submitted_timestamp}}
+                  </td>
+                  <td>
+                      {{ homework.grade }}
+                  </td>
+                  <td>
+                      {{ homework.feedback }}
+                  </td>
+              </tr> 
+              {% endfor %}
+            {% else %}
+            <tr>
+              <td>
+                Nothing to display. No homeworks submitted yet
+              </td>
+            </tr>
+            {% endif %}
+          </table>
+        </p>
+  </div>
+</ul>
+{% endblock %}

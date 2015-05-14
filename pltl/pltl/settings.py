@@ -43,23 +43,29 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_nose',
     'User',    
     'Course',
     'Class',
     'Enrolled_Class',
     'Assignment',
     'Homework',	
-    
-    
 )
+'''
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=Assignment, Class, Course, Enrolled_Class, Homework, User',
+]
+'''
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -101,6 +107,7 @@ AUTHENTICATION_BACKENDS = (
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+#STATIC_ROOT = '/Users/ray/Desktop/ray-pltl/pltl/static'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )

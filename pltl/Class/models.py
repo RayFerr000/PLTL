@@ -7,11 +7,11 @@ from datetime import datetime
 
 '''making our own Class class'''
 class Class(models.Model):
-	class_id = models.CharField(max_length=20, default = 'DEFAULT VALUE', db_index=True, unique=True, blank=False)
-	course_id = models.ForeignKey(Course, to_field = 'course_id')
-	semester = models.CharField(max_length=20, default = 'DEFAULT VALUE', blank=False)
-	year = YearField(null = False, blank=False)
-	class_description = models.CharField(max_length=500, default = 'Enter 500 characters at max', blank=True)
+	class_id = models.CharField(max_length=20, default='DEFAULT VALUE', db_index=True, unique=True, blank=False)
+	course_id = models.ForeignKey(Course, to_field='course_id')
+	semester = models.CharField(max_length=20, default='DEFAULT VALUE', blank=False)
+	year = YearField(null=False, blank=False)
+	class_description = models.CharField(max_length=500, default='Enter 500 characters at max', blank=True)
 	
 	def __str__(self): 
         	return self.class_id

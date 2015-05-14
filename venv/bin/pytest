@@ -1,0 +1,7 @@
+#!/Users/ray/Desktop/PLTL/venv/bin/python
+
+import warnings
+warnings.simplefilter('default', DeprecationWarning)
+
+from logilab.common.pytest import run
+run()

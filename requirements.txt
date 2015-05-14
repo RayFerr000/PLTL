@@ -1,33 +1,36 @@
-Python
----------
-beautifulsoup4
-coverage
-lettuce
-Flask
-django
-django-yearlessdate
-djangorestframework
-mercurial
-mock
-nose
-pip
-Pygments #syntax highlightin in the bitbucket wiki
-pylint
-requests
-selenium
-setuptools
-
-Javascript
-------------
-to install npm
-$ curl http://nodejs.org/dist/node-latest.tar.gz | tar xvz
-$ cd node-v*
-$ ./configure --prefix=$VIRTUAL_ENV
-$ make install
-
-list packages with npm ls
-
-npm install -g bower
-
-bower list -- list the bower packages
-bower install jquery
+astroid==1.3.6
+beautifulsoup4==4.3.2
+coverage==3.7.1
+dj-database-url==0.3.0
+dj-static==0.0.6
+Django==1.8.1
+django-toolbelt==0.0.1
+django-yearlessdate==0.3b0
+extras==0.0.3
+Flask==0.10.1
+fuzzywuzzy==0.5.0
+gunicorn==19.3.0
+itsdangerous==0.24
+Jinja2==2.7.3
+lettuce==0.2.20
+linecache2==1.0.0
+logilab-common==0.63.2
+MarkupSafe==0.23
+mercurial==3.4
+mock==1.0.1
+nose==1.3.6
+pbr==0.11.0
+psycopg2==2.6
+Pygments==2.0.2
+pylint==1.4.3
+python-mimeparse==0.1.4
+python-subunit==1.1.0
+requests==2.7.0
+selenium==2.45.0
+six==1.9.0
+static3==0.5.1
+sure==1.2.10
+testtools==1.8.0
+traceback2==1.4.0
+unittest2==1.0.1
+Werkzeug==0.10.4

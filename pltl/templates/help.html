@@ -1,0 +1,169 @@
+{% load staticfiles %}
+<!doctype html>
+<html class="no-js" lang="en">
+	<head>
+    	<meta charset="utf-8" />
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    	<title>PLTL | Help</title>
+    	<link rel="stylesheet" href="{% static "css/foundation.css" %}"></link>
+    	<link rel="stylesheet" href="{% static "css/foundation-datepicker.css" %}"></link>
+    	<link rel="stylesheet" href="{% static "css/font-awesome.css" %}"></link>
+    	<script src="{% static "js/vendor/modernizr.js" %}"></script>
+    	<script src="{% static "js/vendor/jquery.js" %}"></script>
+    	<script src="{% static "js/foundation/foundation-datepicker.js" %}"></script>
+  	</head>
+  
+  	<body>
+    	<nav class="top-bar" data-topbar>
+      		<ul class="title-area">       
+        		<li class="name"><h1><a href="{% url 'home' %}"><strong>Peer Led Team Learning</strong></a></h1></li>
+      		</ul>       
+      		<section class="top-bar-section">    
+        		<ul class="right">
+            		<li class="divider"></li>
+        		</ul>
+      		</section>
+    	</nav>
+
+		<div class="row">
+			<div class="row">
+        		<div class="small-12 large-12 columns">&nbsp;</div>
+    		</div>
+			<div class="row">
+				<h5><strong>PLTL has 3 main User Roles:</strong></h5>
+				<p><li>Instructor</li>
+		        <li>Peer Leader</li>
+		        <li>Student</li></p>
+			</div>
+			<div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How to create Course?</strong></h5>
+		        <p>Admin of the site can only create Course.</p>
+		    </div>
+			<div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How to create Class?</strong></h5>
+		        <p><strong>Only Instructor can create Class:</strong> In the instructors home page, Under the Create Class tab: Add Class ID, Select Course ID from drop down list, Select Semester from drop down list, Add year, Add Class Description (Optional) and hit Create New button.</p>
+		    </div>
+		    <div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How to view Instructors current Courses?</strong></h5>
+		        <p>In the instructors home page, Under Create Class tab there is a data table (Current Classes) with the column names: Class ID, Course Name, Semester and Year. Instructor will be able to see Classes and Courses his teaching in current semester.</p>
+		    </div>
+		    <div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How to Search for Class (Instructor View)?</strong></h5>
+		        <p>In the instructors home page, Under Search Class tab insert Class ID and hit Search button. If record doesnt exist there will be a massage pop up 'No Record Found. Please type full Class ID'. If record exist you can view in the data table(Search Result) below.</p>
+		    </div>
+		    <div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How to update Class details (Instructor View)?</strong></h5>
+		        <p>In the search result table there will be a button 'Edit'. Hit the button there will be a modal pop up containing details of the Class. You will only be able to update Semester, Year and Class Description of the Specific Class you searched for.</p>
+		    </div>
+		    <div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How to view Peer Leader/Student current registered Classes?</strong></h5>
+		        <p>In the Peer Leader/Student home page, Under Search Class tab there is a data table (View Class) in the top right side with the column names: Class ID, Status.</p>
+		    </div>
+		    <div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How to Search for Class (Peer Leader/Student View)?</strong></h5>
+		        <p>In the Peer Leader/Student home page, Under Search Class tab insert Class ID and hit Search button. If record doesnt exist there will be a massage pop up 'No Record Found. Please type full Class ID'. If record exist you can view in the data table below.</p>
+		    </div>
+		    <div class="row">
+		    	
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How to register/drop Class (Peer Leader/Student View)?</strong></h5>
+		        <p>In the Peer Leader/Student home page, Under Search Class tab insert Class ID and hit Search button and there will be a data table (Search Result) and a Description button. Hit description button and from the modal you can view description of the class and Register for the class by hitting Register button. Once you register you will be able to see update data table (View Class) in top right of the page. Once you registered you can always drop class. For dropping specific class hit Drop button of the Class ID.</p>
+		    </div>
+		    <div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How To View List of Assignments (Instructor View)?</strong></h5>
+		        <p>In the Instrucotors home page, Under Create Class tab instructor can view all the current classes his teaching for the semester or search for specific class under Search Class tab. From data table click Class ID link and will redirect to Assignment home page for the particular Class ID. In the Assigment list table you can view All the Assignments, Due date and Grade.</p>
+		    </div>
+		    <div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How To Upload New Assignment (Instructor View)?</strong></h5>
+		        <p>In the Assigment home page, Hit Upload Assignment button you will be redirected to a new page where you can upload assignment. Data field for uploading assigment: Assignment name, Publish date, Due date, Total grade of the particular Assigment and Upload file option. If you want to cancel and return back to previous page hit Cancel.</p>
+		    </div>
+		    <div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong> How To Manage Student and Peer Leader Group (Instructor View)?</strong></h5>
+		        <p>In the Assigment home page, Hit upload Manage button you will be redirected to a new page where you can manage all the student and peer leader who has been registered for specific class. Instructor will be able to view all the registered student/peer leader and Enroll them in his class.</p>
+		    </div>
+		    <div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How To Assign Peer Leader (Instructor View)?</strong></h5>
+		        <p>In the Manage Student home page, Instructor can view all the registered student and after enrolling them he can assign peer leader for specific student group from the user list drop down menu.</p>
+		    </div>
+		    <div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How To Upload Home Work Solution (Student View)?</strong></h5>
+		        <p>In the Home page hit search for class and choose Class ID from search table. You will be redirected to Assigment page where you will be able to see Upload date, Due date, Total grade. After uploading solution for specific assigment student can view/download uploaded solution.</p>
+		    </div>
+		    <div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How To View All Grades?</strong></h5>
+		        <li>Instructor can view all the assigments in a data table and grade particular class.</li>
+		        <li>Peer Leader can view all the assigments grade of his student group only.</li>
+		        <li>Student can only view his own grade for particular class.</li>
+		    </div>
+		    <div class="row">
+		        <div class="small-12 large-12 columns">&nbsp;</div>
+		    </div>
+		    <div class="row">
+		        <h5><strong>How to view and grade assignment (Instructor View)?</strong></h5>
+		        <p>In instructors class page, from assigment list click on assignment name you will be redirected to view grade page. Instructor can open assignment, download assignment and grade assignment.</p>
+		    </div>
+		</div>
+    	<footer class="row">
+      		<hr/>
+      		<div class="small-12 columns">
+        		<div class="large-9 columns">
+          			<ul class="inline-list left">
+			            <li><a href="https://sites.google.com/site/quickpltl"><strong>About</strong></a></li>
+			            <li><a href="{% url 'contact' %}"><strong>Contact</strong></a></li>
+			            <li><a href="{% url 'help' %}"><strong>Help</strong></a></li>
+          			</ul>
+        		</div>
+        		<div class="large-3 columns">
+          			<p><small>Copyright © 2015 All Rights Reserved</small></p>
+        		</div>
+      		</div> 
+    	</footer>
+        
+    	<script src="{% static "js/vendor/jquery.js" %}"></script>
+    	<script src="{% static "js/foundation.min.js" %}"></script>
+    	<script>
+      		$(document).foundation();
+   		</script>
+  	</body>
+</html>

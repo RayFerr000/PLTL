@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block linkscript %}
-    <link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>
+    
     <link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
     <script src="{% static "js/Assignment.js" %}"></script>
 {% endblock %}
@@ -13,13 +13,14 @@
 {% endblock %}
       
 {% block content %}
+<title>PLTL | Home </title>
     <div class="row">
         <div class="small-12 large-12 columns">&nbsp;</div>
     </div>
     <div class="row">
         <dl class="nice contained tabs">
             {%if user.is_staff%}
-                {% if searchclass %}
+                {% if searchclass or label == "NoRecordFound"%}
                     <dd><a href="#class">Create Class</a></dd>
                     <dd><a href="#search" class="active">Search Class </a></dd>
                 {% else %}
@@ -34,7 +35,7 @@
 
         <ul class="nice tabs-content contained">
             {%if user.is_staff%}
-                {% if searchclass %}
+                {% if searchclass or label == "NoRecordFound"%}
                     <li id="classTab">
                 {% else %}
                 <li class="active" id="classTab">
@@ -45,7 +46,7 @@
                 <div class="row">
                     <section class="small-8 columns"> 
                         <form data-abide action = "{% url "User:test" %}" method = 'POST'>
-                            {% csrf_token %}    
+                            {% csrf_token %}
                             <div class="large-12 row">
                                 <div class="large-6 columns" class="name-field">
                                     <label for="class_id">Class ID: </label>
@@ -82,7 +83,7 @@
                             </div>
                             <div class="large-12 row">
                                 <div class="large-12 columns">
-                                    <label for="class_description">Class Description: </label>
+                                    <label for="class_description">Class Description: (Optional)</label>
                                     <textarea rows="4" cols="50" id="class_description" type="text" name="class_description"></textarea>
                                 </div>
                             </div>
@@ -97,28 +98,31 @@
                 <div align="center" class="row">
                     <h4>Current Classes:</h4>
                     <table>
+                        <thead>
                         <tr>
-                            <th style='width:100px'>Class ID</th>
-                            <th style='width:400px'>Course Name</th>
+                            <th style='width:200px'>Class ID</th>
+                            <th style='width:300px'>Course Name</th>
+                            <th style='width:100px'>Semester</th>
+                            <th style='width:100px'>Year</th>
                         </tr>
-                        {% if classes %}
-                            {% for c in classes %}
+                        </thead>
+                        {% if inscourses and sem and year %}
+                            {% for c,d in inscourses %}
+                            <tbody>
                                 <tr>
                                    <td><a href= "/User/Class/{{c.class_id }}/">{{ c.class_id }}</a></td>
-                                    <td>{{ 'Intro to Computer Science' }}</td>
-                                    <!--{% if courselist %}
-                                        {% for r in courselist %}
-                                            <td>{{ 'Intro to Programming' }}</td>
-                                        <!--{% endfor %}
-                                    {% endif %}-->
+                                    <td>{{ d }}</td>
+                                    <td>{{ sem }}</td>
+                                    <td>{{ year }}</td>
                                 </tr>
+                            </tbody>
                             {% endfor %}
                         {% endif %}
                     </table>
                 </div>
             </li>
             {%if user.is_staff%}
-                {% if searchclass %}
+                {% if searchclass or label == "NoRecordFound"%}
                     <li class = "active" id="searchTab">
                 {% else %}
                     <li id="searchTab">
@@ -126,42 +130,59 @@
             {%else%}
                 <li class="active" id="searchTab">
             {%endif%}
-                <div class="row">
+                <div class="small-12 columns row">
                     <section class="small-4 columns">
                         <form data-abide action = "{% url "User:searchclass" %}" method='GET'>
-                            {% csrf_token %}
-                                <div class="name-field">
-                                    <label for="class_id">Class ID: </label>
-                                    <input type="text" id="class_id" name="class_id" maxlength="100" required>
-                                    <small class="error">No Class ID found</small>
-                                </div>
-                            <input type = 'submit' class="radius button success medium" id = "btnSearch" value="Search"> 
+                        {% csrf_token %}
+                            {% if label == "success" %}
+                                <span class="alert label">Class details has been updated</span>
+                            {%endif%}
+                            {% if label == "register" %}
+                                <span class="alert label">Successfully registered for Class</span>
+                            {%endif%}
+                            {% if label == "drop" %}
+                                <span class="alert label">Class has been dropped</span>
+                            {%endif%}
+                            {% if label == "NoRecordFound" %}
+                                <span class="alert label">No record found. Please type full Class ID</span>
+                            {%elif label == "RecordFound" %}
+                            {%endif%}
+                            <div class="name-field">
+                                <label for="class_id">Class ID: </label>
+                                <input type="text" id="class_id" name="class_id" maxlength="100" required>
+                                <small class="error">No Class ID found</small>
+                            </div>
+                            <span data-tooltip aria-haspopup="true" class="has-tip [radius round]" title="Search is case sensitive: Please enter full Class ID">
+                                <input type = 'submit' class="radius button success medium" id = "btnSearch" value="Search">
+                            </span>     
                         </form>
                     </section>
+                    <section class="small-2 columns">
+                        <div class="small-12 large-12 columns">&nbsp;</div>
+                    </section>
                     {%if user.is_staff%}
-
+                        <div class="small-12 large-12 columns">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
                     {%else%}
-                    <section class="small-4 columns">
-                        <form data-abide action = "{% url "User:searchclass" %}" method='GET'>
+                    <section class="small-6 columns">
                         <h5 align="center">View Class:</h5>
                         <table>
                             <tr>
-                                <th style='width:180px'>Class ID</th>
-                                <th style='width:180px'>Status</th>
+                                <th style='width:300px'>Class ID</th>
+                                <th style='width:150px'>Status</th>
                             </tr>
                             {% if student_class_status %}
                                 {% for c in student_class_status %}
-                                    <tr> 
-                                        <td><a href= "/User/Class/{{ c.class_id }}">{{ c.class_id }}</a></td>
-                                        <td>{{ c.status }}</td>
-                                        <td><input type = "submit" class="radius button alert medium" value="Drop"></td>
-                                        <input type="hidden" id="dropclass" name="dropclass" value = "{{ c.class_id }}">
-                                        <!--<td><a href= "#" class="button small alert" data-reveal-id="ClassDrop">Drop</a></td>-->
-                                    </tr>
+                                    <form data-abide action = "{% url "User:searchclass" %}" method='GET'>
+                                    {% csrf_token %}
+                                        <tr> 
+                                            <td><a href= "/User/Class/{{ c.class_id }}">{{ c.class_id }}</a></td>
+                                            <td>{{ c.status }}</td>
+                                            <td><button type="submit" class="radius button alert medium" id="dropclass" name="dropclass" value = "{{ c.class_id }}">Drop</button></td>
+                                        </tr>
+                                    </form>
                                 {% endfor %}
                             {% endif %}
                         </table>
-                    </form>
                     </section>
                     {%endif%}
                 </div>
@@ -175,7 +196,7 @@
                     <h4>Search Result:</h4>
                     <table>
                         <tr>
-                            <th style='width:100px'>Class ID</th>
+                            <th style='width:250px'>Class ID</th>
                             <th style='width:350px'>Course Name</th>
                             <th style='width:100px'>Semester</th>
                             <th style='width:100px'>Year</th>
@@ -188,7 +209,11 @@
                                         <td>{{ r.course_name }}</td>
                                         <td>{{ c.semester }}</td>
                                         <td>{{ c.year }}</td>
-                                        <td><a href="#" class="button small info" data-reveal-id="ClassDescription">View</a></td>
+                                        <td><a href="#" class="button small info" data-reveal-id="ClassDescription">Description</a></td>
+                                        {%if user.is_staff%}
+                                            <td><a href="#" class="button small default" data-reveal-id="ClassEdit">Edit</a></td>  
+                                        {%else%}
+                                        {%endif%}
                                     </tr>
                                 {% endfor %}
                             {% endfor %}
@@ -227,26 +252,74 @@
                     </form>               
                     <a class="close-reveal-modal">&#215;</a>
                 </div>
-            <!--********************* Class Drop Modal **************************-->
-                <!--<div id="ClassDrop" class="reveal-modal" data-reveal>
-                    <form data-abide action = "{% url "User:searchclass" %}" method='GET'>
-                            <h5>Are you sure want to Drop class</h5>
+            <!--***************************Class Edit Modal************************-->
 
-                                <input type="hidden" id="dropclass" name="dropclass" value = "">
-                                <div class="row">
-                                    <div class="small-12 large-12 columns">&nbsp;</div>
-                                </div>
-                                <div class="row">     
-                                    <div class="large-12 columns">
-                                        <button class="radius button alert medium right"><strong>Drop</strong>
+                <div id="ClassEdit" class="reveal-modal2" data-reveal>
+                    <div align="center"><h3>Edit Class Details</h3></div>
+                    <hr/>
+                    <div class="medium-6 medium-centered large-centered large-6 columns">
+                        <form data-abide action = "{% url 'User:updateclass' %}" method="POST">
+                        {% csrf_token %}
+                            {% if class_details %}
+                                {% for d in class_details %}
+                                    <div class="name-field">
+                                        <label>Class ID: <strong>{{ d.class_id }}</strong></label>
+                                        <input name = "updateClass" id = "updateClass" type="hidden" value = "{{ d.class_id }}"></input>
+                                    </div>
+                                    <div class="row">
+                                        <div class="small-12 large-12 columns">&nbsp;</div>
+                                    </div>
+                                    <div class="name-field">
+                                        <label>Course ID: <strong>{{ d.course_id_id }}</strong></label>
+                                        <input name="updateCourse" id = "updateCourse" type="hidden" value= "{{ d.course_id_id }}"></input>
+                                    </div>
+                                    <div class="row">
+                                        <div class="small-12 large-12 columns">&nbsp;</div>
+                                    </div>
+                                    <div>
+                                        <label for="semester">Semester:</label>
+                                        <select name="updateSem" required>
+                                            <option value="">Select...</option>
+                                            {%if d.semester == "Spring"%}
+                                                <option value="{{ d.semester }}" selected>{{ d.semester }}</option>
+                                            {%else%}
+                                                <option value="Spring">Spring</option>
+                                            {%endif%}
+                                            {%if d.semester == "Summer"%}
+                                                <option value="{{ d.semester }}" selected>{{ d.semester }}</option>
+                                            {%else%}
+                                                <option value="Summer">Summer</option>
+                                            {%endif%}
+                                            {%if d.semester == "Fall"%}
+                                                <option value="{{ d.semester }}" selected>{{ d.semester }}</option>
+                                            {%else%}
+                                                <option value="Fall">Fall</option>
+                                            {%endif%}
+                                            {%if d.semester == "Winter"%}
+                                                <option value="{{ d.semester }}" selected>{{ d.semester }}</option>
+                                            {%else%}
+                                                <option value="Winter">Winter</option>
+                                            {%endif%}
+                                        </select>
+                                        <small class="error">Please enter Semester</small>
+                                    </div>
+                                    <div class="name-field">
+                                        <label for="year">Year: </label>
+                                        <input id="year" name="updateYear" type="text" maxlength="100" value = "{{ d.year }}" required>
+                                        <small class="error">Please enter Year</small>
+                                    </div>
+                                    <div class="name-field">
+                                        <label for="class_description">Class Description: (Optional)</label>
+                                        <textarea type="text" rows="4" cols="50" id="updateClassDes" name="updateClassDes">{{ d.class_description }}</textarea>
                                     </div> 
-                                </div>
-                        <a class="close-reveal-modal">&#215;</a>
-                    </form> 
-                </div>-->
-
-            <!--********************************************************-->
-
+                                {% endfor %}    
+                            {% endif %}
+                            <input type ='submit' class="radius button success medium" value="Update">     
+                            <br />    
+                        </form>
+                    </div>
+                    <a class="close-reveal-modal">&#215;</a>
+                </div>
             </li>
         </ul>
     </div>

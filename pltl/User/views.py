@@ -1,18 +1,19 @@
-from django.shortcuts import render, redirect, render_to_response, RequestContext
+"""user view"""
+# -*- coding: utf-8 -*-
+from django.shortcuts import redirect, render_to_response, RequestContext
+from django.shortcuts import render
 from django.template import RequestContext, loader
 from User.models import User
-from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib import auth, messages
+from django.http import HttpResponse
+from django.contrib import auth
 from django.core.mail import send_mail
-from django.utils import timezone
 from django.conf import settings
 from datetime import datetime
 from Class.forms import ClassForm
-from Course.forms import CourseForm
 from Class.models import Class, get_semester
-from Class.views import instructors_current_classes
 from Course.models import Course, allCourses
-from django.core.urlresolvers import reverse
+from Class.views import instructors_current_courses_classes
+from Class.views import student_current_class_status
 from Enrolled_Class.models import Enrolled_Class
 
 def user_signup_save(request):
@@ -20,329 +21,315 @@ def user_signup_save(request):
     lname = request.POST.get('lname')
     email = request.POST.get('email')
     password = request.POST.get('password')
-    user = User(fname=fname, lname=lname, email=email, last_login=datetime.now())
+    user = User(fname=fname, lname=lname, email=email,
+    last_login=datetime.now())
     user.set_password(password)
-     
-    #force_insert=True forces the database to do an insert rather then an update.
+    #force_insert=True forces the database to do an insert rather then an update
     status = user.save(force_insert=True)
     if status == 'success':
         subject = 'Welcome to PLTL'
-        with open ("templates/SignUpNotification.txt", "r") as data:
+        with open("templates/SignUpNotification.txt", "r") as data:
             msgbody = data.read()
-        print msgbody
         msg = 'Dear ' + fname +',\n' + msgbody
         from_mail = settings.EMAIL_HOST_USER
-        send_mail(subject, msg,from_mail, [email,from_mail], fail_silently=True)
+        send_mail(subject, msg, from_mail, [email, from_mail],
+        fail_silently=True)
     return redirect('home')
 
-
 def login(request):
-    
-    #student_class_status = Enrolled_Class.objects.filter(status='Registered', email = request.session['_auth_user_id']).values('class_id', 'status')
-    
+    # After login Create class can be called
     if request.POST.get('class_id'):
         return create_class(request)
-    
+
     if request.POST.get('email'):
         email = request.POST.get('email')
         password = request.POST.get('password')
-        user = auth.authenticate(email = email , password = password)
-    
+        user = auth.authenticate(email=email, password=password)
+
     elif request.session['_auth_user_id']:
-        
-        return render_to_response('home.html',{'classes': instructors_current_classes(request), 'courses': allCourses()},context_instance=RequestContext(request))
-    
+        # Instructors Current class and course will be generated on pageload
+        sem = get_semester
+        year = datetime.now().year
+        return render_to_response('home.html', {'sem':sem, 'year':year,
+        'inscourses':instructors_current_courses_classes(request),
+        'student_class_status':student_current_class_status(request),
+        'courses':allCourses()}, context_instance=RequestContext(request))
+
     if user is not None:
         auth.login(request, user)
-
-        return render_to_response('home.html',{'classes': instructors_current_classes(request), 'courses': allCourses()},context_instance=RequestContext(request))
-    
+        # Instructors Current class and course will be generated on pageload
+        sem = get_semester
+        year = datetime.now().year
+        return render_to_response('home.html', {'sem':sem, 'year': year,
+        'inscourses': instructors_current_courses_classes(request),
+        'student_class_status': student_current_class_status(request),
+        'courses': allCourses()}, context_instance=RequestContext(request))
     else:
         return HttpResponse("invalid, not logged in")
 
 def logout(request):
     auth.logout(request)
-    return render(request, 'index.html') 
-
+    return render(request, 'index.html')
 
 def create_class(request):
-    student_class_status = Enrolled_Class.objects.filter(status='Registered', email = request.session['_auth_user_id']).values('class_id', 'status')
+    # Create class taking course id from course table
+    sem = get_semester
+    year = datetime.now().year
     if request.method == 'POST':
         form = ClassForm(request.POST)
         if form.is_valid():
-            new_class = form.save(commit=False)
             new_class = form.save()
-            
-            Enrolled = Enrolled_Class(email = User.objects.get(email=request.session['_auth_user_id']),
-                                class_id =Class.objects.get(class_id=request.POST.get('class_id')),
-                                role = 'Instructor')
-            Enrolled.full_clean()
-            Enrolled.save()
+            enroll_class = Enrolled_Class(email=User.objects.get(
+            email=request.session['_auth_user_id']),
+            class_id=Class.objects.get(\
+            class_id=request.POST.get('class_id')), role='Instructor')
+            enroll_class.full_clean()
+            enroll_class.save()
     else:
         form = ClassForm()
-    return render_to_response('home.html',{'classes': instructors_current_classes(request), 'student_class_status': student_class_status, 'courses': allCourses(),'form': form},context_instance=RequestContext(request))
- 
+    return render_to_response('home.html', {'sem':sem, 'year': year,
+    'inscourses': instructors_current_courses_classes(request),
+    'student_class_status': student_current_class_status(request),
+    'courses': allCourses(), 'form': form},
+    context_instance=RequestContext(request))
 
 def search_classes(request):
-    student_class_status = Enrolled_Class.objects.filter(status='Registered', email = request.session['_auth_user_id']).values('class_id', 'status')
-    
+    # search, drop and register for class
+    sem = get_semester
+    year = datetime.now().year
     if 'class_id' in request.GET and request.GET['class_id']:
-        q = request.GET['class_id']
-        classes = Class.objects.filter(class_id=q)
-        courseName = Course.objects.filter(course_id = (Class.objects.filter(class_id=q).values('course_id'))).values('course_name')
-        class_des = Class.objects.filter(class_id= q).values('class_description', 'class_id')       
+        srch = request.GET['class_id']
+        # returns search result
+        classes = Class.objects.filter(class_id=srch).values()
+        # return course name of the searched class
+        course_name = Course.objects.filter(course_id=(Class.objects.filter(
+        class_id=srch).values('course_id'))).values('course_name')
+        # return class description
+        class_des = Class.objects.filter(
+        class_id=srch).values('class_description', 'class_id')
+        class_details = Class.objects.filter(class_id=srch).values()
+        # if search returns empty string
+        if len(classes) == 0:
+            label = 'NoRecordFound'
+        if len(classes) != 0:
+            label = 'RecordFound'
 
-        return render(request, 'home.html', {'classes': instructors_current_classes(request), 'courses': allCourses(),'class_des': class_des, 'student_class_status': student_class_status, 'searchclass': classes, 'courseName': courseName, 'query': q})
-    
+        return render(request, 'home.html', {'sem':sem,
+        'year': year, 'label':label,
+        'inscourses': instructors_current_courses_classes(request),
+        'courses': allCourses(), 'class_des': class_des,
+        'class_details':class_details,
+        'student_class_status': student_current_class_status(request),
+        'searchclass': classes, 'courseName': course_name, 'query': srch})
+
     if 'register' in request.GET and request.GET['register']:
-        q = request.GET['register']
-
-        temp = Enrolled_Class(email = User.objects.get(email = request.session['_auth_user_id']), class_id = Class.objects.get(class_id = q), status = 'Registered')
-        temp.save()
-
-        return render(request, 'home.html', {'classes': instructors_current_classes(request), 'courses': allCourses(), 'student_class_status': student_class_status, 'query': q})
+        # if student wants to rester for class
+        reg = request.GET['register']
+        # check if the student already registered for the class
+        # if not insert else update
+        temp, created = Enrolled_Class.objects.get_or_create(
+        email=User.objects.get(email=request.session['_auth_user_id']),
+        class_id=Class.objects.get(class_id=reg), role='Student',
+        defaults={'status' : 'Registered'})
+        if not created:
+            temp.status = 'Registered'
+            temp.save()
+        label = 'register'
+        return render(request, 'home.html', {'label':label, 'sem':sem,
+        'year': year,
+        'inscourses': instructors_current_courses_classes(request),
+        'courses': allCourses(),
+        'student_class_status': student_current_class_status(request),
+        'query': reg})
 
     if 'dropclass' in request.GET and request.GET['dropclass']:
-        q = request.GET['dropclass']
-
-        temp = Enrolled_Class.objects.filter(class_id = q, email = request.session['_auth_user_id'], status='Registered')
-        for i in temp:
-            i.status = ''
-            i.save()
-
-        return render(request, 'home.html', {'classes': instructors_current_classes(request), 'courses': allCourses(), 'student_class_status': student_class_status, 'query': q})
+        # if student wants to drop the class
+        drop = request.GET['dropclass']
+        drop_temp = Enrolled_Class.objects.filter(email=User.objects.get(
+        email=request.session['_auth_user_id']), class_id=Class.objects.get(
+        class_id=drop), status='Registered', role='Student')
+        drop_temp.update(status='')
+        label = 'drop'
+        return render(request, 'home.html', {'label':label, 'sem':sem,
+        'year': year,
+        'inscourses': instructors_current_courses_classes(request),
+        'courses': allCourses(),
+        'student_class_status': student_current_class_status(request)})
     else:
         return HttpResponse('Please submit a search term.')
 
-def class_student_info(request):
-    template = loader.get_template('manage_users.html')
-    enrolled_students = Enrolled_Class.objects.filter(class_id='X201').exclude(role='Instructor')
-    students = []
+def update_class_details(request):
+    # instructor update class details
+    sem = get_semester
+    year = datetime.now().year
+    class_Id = request.POST.get('updateClass')
+    course_Id = request.POST.get('updateCourse')
+    semester_Id = request.POST.get('updateSem')
+    yearId = request.POST.get('updateYear')
+    class_des = request.POST.get('updateClassDes')
+    temp_semester = Class.objects.filter(class_id=class_Id,
+    course_id=Course.objects.get(
+    course_id=course_Id)).values('semester')
+    tempYear = Class.objects.filter(class_id=class_Id,
+    course_id=Course.objects.get(course_id=course_Id)).values('year')
+    tempClassDes = Class.objects.filter(class_id=class_Id,
+    course_id=Course.objects.get(
+    course_id=course_Id)).values('class_description')
+    update, created = Class.objects.get_or_create(class_id=class_Id,
+    course_id=Course.objects.get(
+    course_id=course_Id), defaults={
+    'semester' : temp_semester, 'year' : tempYear,
+    'class_description' : tempClassDes})
+    # check if the class id exist or not
+    if not created:
+        update.semester = semester_Id
+        update.year = yearId
+        update.class_description = class_des
+        update.save()
+        label = 'success'
+
+    return render(request, 'home.html', {'label':label, 'sem':sem,
+    'year': year, 'searchclass' : temp_semester,
+    'inscourses': instructors_current_courses_classes(request),
+    'courses': allCourses(),
+    'student_class_status': student_current_class_status(request)})
+
+
+"""this function will divide users into instructors, peer leaders, registered and enrolled users"""
+def class_student_info(request, class_id):
+    enrolled = Enrolled_Class.objects.filter(class_id=class_id).exclude(role='Instructor')
+    instructors = Enrolled_Class.objects.filter(class_id=class_id, role='Instructor')
+    show = False
+    if request.user.is_authenticated():
+        if request.user.is_staff:
+            for instructor in instructors:
+                if request.user.email == instructor.email.email:
+                    show = True
+        elif request.user.is_admin:
+            show = True
+
+    registered_students = []
+    enrolled_students = []
     peer_leaders = []
-    inactives = []
-    for em in enrolled_students:
-        if em.status != 'Active':
-            inactives.append(User.objects.get(email=em.email))
-        elif em.role == 'Student' and em.status == 'Active':
-            students.append(User.objects.get(email=em.email))
-        elif em.role == 'Peer Leader' and em.status == 'Active':
+
+    for em in enrolled:
+        if em.status == 'Registered':
+            registered_students.append(User.objects.get(email=em.email))
+        elif em. role == 'Student' and em.status == 'Enrolled':
+            enrolled_students.append(User.objects.get(email=em.email))
+        elif em.role == 'Peer Leader' and em.status == 'Enrolled':
             peer_leaders.append(User.objects.get(email=em.email))
 
-    print peer_leaders
-
     if request.POST:
-        print request.POST.get("peer_leader")
-
-        if request.POST.get("activate"):
-            return activate(request, enrolled_students, students, peer_leaders, inactives)
-        if request.POST.get("deactivate"):
-            return deactivate(request, enrolled_students, students, peer_leaders, inactives)
+        if request.POST.get("enroll"):
+            return enroll(request, show, class_id, enrolled, registered_students, enrolled_students, peer_leaders)
+        if request.POST.get("remove"):
+            return remove(request, show, class_id, enrolled, registered_students, enrolled_students, peer_leaders)
         if request.POST.get("make_peer_leader"):
-            return make_peer_leader(request, enrolled_students, students, peer_leaders, inactives)
+            return make_peer_leader(request, show, class_id, enrolled, registered_students, enrolled_students, peer_leaders)
         if request.POST.get("make_student"):
-            return make_student(request, enrolled_students, students, peer_leaders, inactives)
-    return render(request, 'manage_users.html', {'enrolled_students': enrolled_students, 'students': students, 'peer_leaders': peer_leaders, 'inactives': inactives})
+            return make_student(request, show, class_id, enrolled, registered_students, enrolled_students, peer_leaders)
+        if request.POST.get("student_led"):
+            return student_led(request, show, class_id, enrolled, registered_students, enrolled_students, peer_leaders)
 
-def activate(request, enrolled_students, students, peer_leaders, inactives):
-    #print "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWe Made It"
-    #print request.POST.get("email")
-    #change = inactives
-    #times = 1
-    for st in enrolled_students:
-        if request.POST.get("email") == st.email.email:
-            student = st
-            #print student.status
-            student.status = "Active"
-            #print student.status
+    return render(request, 'manage_users.html', {'show': show, 'class_id': class_id, 'enrolled': enrolled, 'registered_students': registered_students, 'enrolled_students':enrolled_students, 'peer_leaders': peer_leaders})
+
+'''enroll will remove a student from the registered list and add him to the enrolled list'''
+def enroll(request, show, class_id, enrolled, registered_students, enrolled_students, peer_leaders):
+    for student in enrolled:
+        if request.POST.get("email") == student.email.email:
+            student.role = 'Student'
+            student.status = 'Enrolled'
+            student.full_clean()
             student.save()
+    for student in registered_students:
+        if request.POST.get("email") == student.email:
+            registered_students.remove(student)
+            enrolled_students.append(student)
+    return render(request, 'manage_users.html', {'show': show, 'class_id': class_id, 'enrolled': enrolled, 'registered_students': registered_students, 'enrolled_students':enrolled_students, 'peer_leaders': peer_leaders})
 
-    for st in inactives:
-        #print st
-        #print
-        if request.POST.get("email") == st.email:
-#            print times
-#            print request.POST.get("email")
-#            print st.email
-#            print request.POST.get("email") == st.email
-#            print
-#
-#            print inactives
-#            print students
-#            print
-            inactives.remove(st)
-            students.append(st)
-#            print inactives
-#            print students
-#            print
-#
-#            inactives.append(st)
-#            students.remove(st)
-#            print students
-#            print inactives
-#            print
-#
-#            times = times + 1
-
-#        print "This is try #", times
-#        print "This is request.POST.get(\"email\")"
-#        print type(request.POST.get("email"))
-#        print "This is st.email"
-#        print type(st.email.email)
-#        print "Are they equal?"
-#        print request.POST.get("email") == st.email
-#        print
-#        times = times + 1
-
-    return render(request, 'manage_users.html', {'enrolled_students': enrolled_students, 'students': students, 'peer_leaders': peer_leaders, 'inactives': inactives})
-
-def deactivate(request, enrolled_students, students, peer_leaders, inactives):
-#    change = students
-#    times = 1
-    for st in enrolled_students:
-        if request.POST.get("email") == st.email.email:
-            student = st
-            #print student.status
-            student.status = "Inactive"
-            #print student.status
+'''remove will remove a student from enrolled and put him back into registered list'''
+def remove(request, show, class_id, enrolled, registered_students, enrolled_students, peer_leaders):
+    for student in enrolled:
+        if request.POST.get("email") == student.email.email:
+            student.role = 'Student'
+            student.status = 'Registered'
+            student.full_clean()
             student.save()
+    for student in enrolled_students:
+        if request.POST.get("email") == student.email:
+            enrolled_students.remove(student)
+            registered_students.append(student)
 
-    for st in students:
-#        print st
-#        print
-        if request.POST.get("email") == st.email:
-#            print times
-#            print request.POST.get("email")
-#            print st.email
-#            print request.POST.get("email") == st.email
-#            print
-#
-#            print students
-#            print inactives
-#            print
+    return render(request, 'manage_users.html', {'show': show, 'class_id': class_id, 'enrolled': enrolled, 'registered_students': registered_students, 'enrolled_students':enrolled_students, 'peer_leaders': peer_leaders})
 
-            students.remove(st)
-            inactives.append(st)
-#            print students
-#            print inactives
-#            print
-#
-#            inactives.remove(st)
-#            students.append(st)
-#            print students
-#            print inactives
-#            print
-#            times = times + 1
-
-#        print "This is try #", times
-#        print "This is request.POST.get(\"email\")"
-#        print type(request.POST.get("email"))
-#        print "This is st.email"
-#        print type(st.email.email)
-#        print "Are they equal?"
-#        print request.POST.get("email") == st.email
-#        print
-#        times = times + 1
-
-    return render(request, 'manage_users.html', {'enrolled_students': enrolled_students, 'students': students, 'peer_leaders': peer_leaders, 'inactives': inactives})
-
-def make_peer_leader(request, enrolled_students, students, peer_leaders, inactives):
-#    change = students
-#    times = 1
-    for st in enrolled_students:
-        if request.POST.get("email") == st.email.email:
-            student = st
-            #print student.status
-            student.status = "Active"
-            student.role = "Peer Leader"
-            #print student.status
+'''make peer leader takes a student from enrolled and add him to the list of peer leaders'''
+def make_peer_leader(request, show, class_id, enrolled, registered_students, enrolled_students, peer_leaders):
+    for student in enrolled:
+        if request.POST.get("email") == student.email.email:
+            student.role = 'Peer Leader'
+            student.status = 'Enrolled'
+            student.full_clean()
             student.save()
+    for student in enrolled_students:
+        if request.POST.get("email") == student.email:
+            enrolled_students.remove(student)
+            peer_leaders.append(student)
+    return render(request, 'manage_users.html', {'show': show, 'class_id': class_id, 'enrolled': enrolled, 'registered_students': registered_students, 'enrolled_students':enrolled_students, 'peer_leaders': peer_leaders})
 
-    for st in students:
-#        print st
-#        print
-        if request.POST.get("email") == st.email:
-#            print times
-#            print request.POST.get("email")
-#            print st.email
-#            print request.POST.get("email") == st.email
-#            print
-#
-#            print students
-#            print peer_leaders
-#            print
+'''the student will be added to the specified peer leaders group'''
+def student_led(request, show, class_id, enrolled, registered_students, enrolled_students, peer_leaders):
+    for leader in enrolled:
+        if request.POST.get("student_leader") == leader.email.email:
+            for student in enrolled:
+                if request.POST.get("email") == student.email.email:
+                    leader.students_led.add(student.email)
+                    student.peer_leader = leader.email
+                    leader.full_clean()
+                    student.full_clean()
+                    leader.save()
+                    student.save()
+    return render(request, 'manage_users.html', {'show': show, 'class_id': class_id, 'enrolled': enrolled, 'registered_students': registered_students, 'enrolled_students':enrolled_students, 'peer_leaders': peer_leaders})
 
-            students.remove(st)
-            peer_leaders.append(st)
-#            print students
-#            print peer_leaders
-#            print
-#
-#            peer_leaders.remove(st)
-#            students.append(st)
-#            print students
-#            print peer_leaders
-#            print
-#            times = times + 1
+'''remove all of the peer leaders students and make him a student again'''
+def make_student(request, show, class_id, enrolled, registered_students, enrolled_students, peer_leaders):
+    for leader in enrolled:
+        if request.POST.get("email") == leader.email.email:
+            leader.role = 'Student'
+            leader.status = 'Enrolled'
 
-#        print "This is try #", times
-#        print "This is request.POST.get(\"email\")"
-#        print type(request.POST.get("email"))
-#        print "This is st.email"
-#        print type(st.email.email)
-#        print "Are they equal?"
-#        print request.POST.get("email") == st.email
-#        print
-#        times = times + 1
+            if leader.students_led.exists():
+                for student in leader.students_led.all():
+                    for student_led in enrolled:
+                        if student == student_led.email:
+                            student_led.peer_leader = None
+                            student_led.full_clean()
+                            student_led.save()
 
-    return render(request, 'manage_users.html', {'enrolled_students': enrolled_students, 'students': students, 'peer_leaders': peer_leaders, 'inactives': inactives})
+            leader.students_led.clear()
+            leader.full_clean()
+            leader.save()
 
-def make_student(request, enrolled_students, students, peer_leaders, inactives):
-#    print "I AM IN make_student"
-#    print request.POST.get("email")
-    for st in enrolled_students:
-        if request.POST.get("email") == st.email.email:
-            student = st
-            #print student.status
-            student.status = "Active"
-            student.role = "Student"
-            #print student.status
-            student.save()
+    for leader in peer_leaders:
+        if request.POST.get("email") == leader.email:
+            peer_leaders.remove(leader)
+            enrolled_students.append(leader)
+    return render(request, 'manage_users.html', {'show': show, 'class_id': class_id, 'enrolled': enrolled, 'registered_students': registered_students, 'enrolled_students':enrolled_students, 'peer_leaders': peer_leaders})
 
-    for st in peer_leaders:
-#        print st
-#        print
-        if request.POST.get("email") == st.email:
-#            print times
-#            print request.POST.get("email")
-#            print st.email
-#            print request.POST.get("email") == st.email
-#            print
-#
-#            print students
-#            print peer_leaders
-#            print
+'''this function will group students with their peer leaders'''
+def group_view(request, class_id):
+    peer_leaders = Enrolled_Class.objects.filter(class_id='X201', role='Peer Leader')
+    instructors = Enrolled_Class.objects.filter(class_id=class_id, role='Instructor')
+    group_view = {}
+    show = False
+    if request.user.is_authenticated():
+        if request.user.is_staff:
+            for instructor in instructors:
+                if request.user.email == instructor.email.email:
+                    show = True
+        elif request.user.is_admin:
+            show = True
+    for leader in peer_leaders:
+        group_view[leader.email] = leader.students_led.all()
 
-            peer_leaders.remove(st)
-            students.append(st)
-#            print students
-#            print peer_leaders
-#            print
-#
-#            peer_leaders.remove(st)
-#            students.append(st)
-#            print students
-#            print peer_leaders
-#            print
-#            times = times + 1
-
-#        print "This is try #", times
-#        print "This is request.POST.get(\"email\")"
-#        print type(request.POST.get("email"))
-#        print "This is st.email"
-#        print type(st.email.email)
-#        print "Are they equal?"
-#        print request.POST.get("email") == st.email
-#        print
-#        times = times + 1
-
-    return render(request, 'manage_users.html', {'enrolled_students': enrolled_students, 'students': students, 'peer_leaders': peer_leaders, 'inactives': inactives})
+    return render(request, 'group_view.html', {'show': show, 'class_id': class_id, 'group_view': group_view})

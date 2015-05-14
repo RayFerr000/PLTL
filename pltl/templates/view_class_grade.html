@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}PLTL | View Grades{% endblock %}
+{% block linkscript %}
+    <link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>
+    <link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
+    <script src="{% static "js/Assignment.js" %}"></script>
+    <script>
+   var class_id = "\{{class_id}}";
+   function download_all() 
+   {
+      window.location = "/User/Class/download_csv/"+class_id   
+   }
+
+</script>
+{% endblock %}
+{% block username %}Welcome {{request.user.fname}}{% endblock %}
+{% block logout %}    
+{%if user.is_authenticated%}
+    <li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
+{%endif%}
+{% endblock %}
+{% block content %}
+<div align="center" class="row">
+    <h4>Grades for all the Assignments of Class : {{ class_id }}</h4>
+    <table>
+        {% if assignments %}
+            <tr>
+                    <th style='width:200px'>Students </th>            
+                {% for ass_name in assignments %}
+                    <th style='width:200px'>{{ ass_name }}</th>
+                {% endfor %}
+            </tr>
+        
+            {% if Homeworks %}
+                {% for homework,hk in Homeworks.iteritems %}
+                    <tr>
+                        {% for h in hk %}
+                            <td> {{ h }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            {% endif %} 
+        {% endif %}
+    </table>
+    <input type="submit" class="radius button success medium" value="Download as CSV" onclick = download_all() />
+</div>
+{% endblock %}

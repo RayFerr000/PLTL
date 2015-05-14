@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block linkscript %}
+    <link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
+    <script src="{% static "js/Assignment.js" %}"></script>
+{% endblock %}
+{% block username %}Welcome {{request.user.fname}}{% endblock %}
+{% block logout %}    
+{%if user.is_authenticated%}
+    <li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
+{%endif%}
+{% endblock %}
+      
+{% block content %}
+<div align="left">
+<form data-abide action="{% url "User:class_student_info" class_id %}">
+{% csrf_token %}
+<input type='submit' class="radius button default medium" id="btnNew" value="Back">
+</div>
+</form>
+
+<div align="center">
+<h3>Group View: {{ class_id }}</h3>
+</div>
+
+{% if group_view %}
+<div align="center">
+<dl>
+    {% for leader, students_led in group_view.items %}
+        <dt>{{ leader.get_full_name }}</dt>
+        {% for student in students_led %}
+            <dd>{{ student.get_full_name }}</dd>
+        {% endfor %}
+    {% endfor %}
+</dl>
+</div>
+{% endif %}
+{% endblock %}

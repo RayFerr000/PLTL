@@ -15,3 +15,4 @@ class Homework(models.Model):
 	submitted_timestamp = models.DateTimeField(auto_now_add=True, blank=True)
 	grade = models.CharField(max_length = 3, blank = True, null=True)
 	feedback = models.CharField(max_length = 300, blank = True, null=True)
+	graded_by = models.CharField(max_length = 50, blank = True, null=True)

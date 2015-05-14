@@ -2,49 +2,67 @@ jQuery(document).ready(function ($) {
 
 	/* Use this js doc for all application specific JS */
 	/* intiate calender 
-	$("#id_pub_date").fdatepicker();
+	$("#id_pub_date").fdatepicker(); */
 	$("#id_due_date").fdatepicker({ format: 'yyyy-mm-dd'}).fdatepicker("setDate", new Date()+7);  
-*/
+
  	console.log("before");
      
      var urlchunks = window.location.href.split('/');
      var classid = urlchunks[urlchunks.length - 2];
      var apiPath = "/User/Class/api/getAssignmentList/"+classid;
-
+     
  $.ajax({
    url: apiPath,
    
    method: "GET"
  }).done(function(response) {
   console.log(classid+"-------------"+response);
-  $("#assignmentListDetails").dataTable({
+  var $dt =  $("#assignmentListDetails").dataTable({
    "aaData": response,
-   "aoColumns": [{
+    "aaSorting": [],
+   "draw": 1,
+   "columnDefs": [
+    { "width": "30%", "targets": 0}, {"sClass": "nameClass", "aTargets": [ 0 ] }
+  ],
+   "aoColumns": [
+
+  {
+  "mData":"assignment_name",  
+  "sTitle": "Assignment",
+  "mRender": function(data, type, val) { 
+        if($('#manage').length == 1 || $('#isPeerLeader').length == 1){
+          return'<a href="/Class/Assignment/' +val.assignment_id+'/Grade">' + val.assignment_name + '</a>'
+        }
+        else                      
+          return '<a href="/Homework/' +val.assignment_id+ '">' + val.assignment_name + '</a>';             
+    }
+   },
+  {
   "mData":"due_date",
   "sTitle": "Due Date"
-   },  
-   
-   {
-  "mData":"assignment_name",
-  "sTitle": "Assignment Name"
    },
    {
-  "mData": "assignmentfile",
-  "mRender": function ( url, type, full )  {
-    return "<a href='#' onclick='window.open(\"/"+url+"\")'>"+url+"</a></li>";
-  },
-  "sTitle": "Assignment File"
-   },{
-  "mData": "pub_date",
-  "sTitle": "Publish Date"
+  "mData":"total_grade",
+  "sTitle": "Grade"
    }]
+
  });
  });
 
-    console.log("after");
-	/* TABS --------------------------------- */
-	/* Remove if you don't need :) */
+    console.log("after");  
+  
 
+
+/*
+   $('#assignmentListDetails').on( 'click', 'td', function () {
+      if($('#assignmentListDetails thead tr th').eq($(this).index()).html().trim() == "Assignment Name"){
+        
+        var row = $(this).parent().find('td').html().trim();
+        //alert(row);
+         window.location.href="/Homework/"+row;
+      }
+    });
+*/
 	function activateTab($tab) {
 		var $activeTab = $tab.closest('dl').find('a.active'),
 				contentLocation = $tab.attr("href") + 'Tab';
@@ -70,7 +88,7 @@ jQuery(document).ready(function ($) {
 		//$.foundation.customForms.appendCustomMarkup();
 	}
 
-	/* ALERT BOXES ------------ */
+	
 	$(".alert-box").delegate("a.close", "click", function(event) {
     event.preventDefault();
 	  $(this).closest(".alert-box").fadeOut(function(event){
@@ -78,20 +96,6 @@ jQuery(document).ready(function ($) {
 	  });
 	});
 
-
-	
-  /*  var currentDate = new Date();
-    $('#id_due_date').fdatepicker({
-        inline: true,
-        showOtherMonths: true,
-        dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        dateFormat: "yy-mm-dd"
-    });
-    
-    $("#id_due_date").fdatepicker("setDate", currentDate); */
-
-
-	/* DROPDOWN NAV ------------- */
 
 	var lockNavBar = false;
 	$('.nav-bar a.flyout-toggle').on('click', function(e) {

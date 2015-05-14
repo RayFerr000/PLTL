@@ -10,7 +10,9 @@ admin.autodiscover()
 urlpatterns = patterns('',
     
     url(r'^$', TemplateView.as_view(template_name = 'index.html'), name = 'home'),
-    url(r'^Class/Assignments/',include('Homework.urls')),
+    url(r'^help/', TemplateView.as_view(template_name = 'help.html'), name = 'help'),
+    url(r'^contact/', TemplateView.as_view(template_name = 'contact.html'), name = 'contact'),
+    url(r'^Class/Assignment/',include('Homework.urls')),
     
     url(r'^signup/', user_signup_save, name="user_signup_save"),
     url(r'^admin/', include(admin.site.urls)),
@@ -20,7 +22,9 @@ urlpatterns = patterns('',
     #url(r'^User/search_for_class','Class.views.search_for_class', name = "searchForClass"),
     url(r'^Courses/', 'Course.views.course_list', name = "course"),
     url(r'^Classes/', 'Class.views.class_list', name = "class"),
-    url(r'^Homework/', 'Homework.views.home_list', name = "Homework"),    
+    url(r'^Homework/(?P<ass_id>\w+)$', 'Homework.views.homework_submission', name = "homework_submission"),
+    url(r'^Homework/', 'Homework.views.homework_submission', name = "homework_submission"),
+    
     url(r'^class/', TemplateView.as_view(template_name = 'class_homepage.html'), name = "class"),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

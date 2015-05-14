@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}PLTL | View Grades{% endblock %}
+{% block linkscript %}
+    <link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>
+    <link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
+    <script src="{% static "js/Assignment.js" %}"></script>
+{% endblock %}
+{% block username %}Welcome {{request.user.fname}}{% endblock %}
+{% block logout %}    
+{%if user.is_authenticated%}
+    <li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
+{%endif%}
+{% endblock %}
+{% block content %}
+<div align="center" class="row">
+    <h4>Grades for all the Assignments of Class : {{ class_id }}</h4>
+    <table>
+        {% if assignments %}
+            <tr>
+                    <th style='width:200px'>Assignments </th> 
+                    <th style='width:300px'>Submitted Homework </th>           
+                    <th style='width:300px'>Submitted On</th>
+                    <th style='width:200px'>Grade</th>
+                    <th style='width:400px'>Feedback</th>
+                    <th style='width:200px'>Graded By</th>
+            </tr>        
+            {% if Submitted_Homeworks %}
+                {% for homework,hk in Submitted_Homeworks.iteritems %}
+                    <tr>
+                        <td>{{ hk.0 }}</td>
+                        {% if '--' in hk.1 %}
+                            <td>{{ hk.1 }}</td>
+                        {% else %}
+                            <td><a target=\"_blank\" href="{{ hk.1.url }}" title=\"\">{{ hk.2 }}</a></td>
+                        {% endif %}                       
+                        <td>{{ hk.3 }}</td>
+                        <td>{{ hk.4 }}</td>
+                        <td>{{ hk.5 }}</td>
+                        <td>{{ hk.6 }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}             
+        {% endif %}
+    </table>
+</div>
+{% endblock %}

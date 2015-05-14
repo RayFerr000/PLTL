@@ -33,7 +33,7 @@ def assignment_list(request, class_id):
             newdoc.save()
 
             # Redirect to the document list after POST
-        return HttpResponseRedirect(reverse('User:Class:assignment',kwargs={'class_id': req_class_id}))
+        return HttpResponseRedirect(reverse('User:Class',kwargs={'class_id': req_class_id}))
     else:
         req_class_id = class_id
         form = AssignmentForm() # A empty, unbound form
