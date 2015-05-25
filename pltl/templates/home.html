@@ -140,12 +140,15 @@
                             {% if label == "register" %}
                                 <span class="alert label">Successfully registered for Class</span>
                             {%endif%}
-                            {% if label == "drop" %}
+                            {% if label == "drop" and label2 == "none"%}
                                 <span class="alert label">Class has been dropped</span>
                             {%endif%}
                             {% if label == "NoRecordFound" %}
                                 <span class="alert label">No record found. Please type full Class ID</span>
                             {%elif label == "RecordFound" %}
+                            {%endif%}
+                            {% if label2 == "yes" %}
+                                <span class="alert label">Once Enrolled you cannot drop. Please contact system administrator.</span>
                             {%endif%}
                             <div class="name-field">
                                 <label for="class_id">Class ID: </label>

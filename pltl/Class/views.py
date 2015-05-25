@@ -8,28 +8,22 @@ from django.http import HttpResponse
 from Class.models import Class
 from Assignment.models import Assignment
 from Enrolled_Class.models import Enrolled_Class
-from Class.models import Class
-from Enrolled_Class.models import Enrolled_Class
 from Course.models import Course
 from User.models import User
 from django.contrib import auth
 from Class.models import get_semester
 from Homework.models import Homework
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from datetime import timedelta, datetime, date
 from django.utils import timezone
-from Assignment.models import Assignment
 from Assignment.forms import AssignmentForm
 from Assignment.PostSerializer import PostSerializer
-from datetime import datetime
 import csv
 
-# Will create class using model form
+''' This function will create class using model form '''
 def class_list(request):
-    # Will create class using model form
     class_info = Class.objects.all()
     if request.method == 'POST':
         form = ClassForm(request.POST)
@@ -49,8 +43,8 @@ def class_list(request):
     return render_to_response('classes.html', {'classes':class_info,\
     'form':form}, context_instance=RequestContext(request))
 
+''' This function will show current Classes instructor teaching this semester '''
 def instructors_current_classes(request):
-    # Current Classes instructor teaching this semester
     class_info = Enrolled_Class.objects.filter(\
     role='Instructor',\
     email=request.session['_auth_user_id'],\
@@ -58,16 +52,14 @@ def instructors_current_classes(request):
     year=datetime.now().year).values('class_id'))).values('class_id')
     return class_info
 
+''' This function will show registered Class list of student for current semester '''
 def student_current_class_status(request):
-    # Registered Class list of student for current semester
     student_class_status = Enrolled_Class.objects.filter(
     email=request.session['_auth_user_id']).exclude(
     status='').values('class_id', 'status')
-    print student_class_status
     return student_class_status
 
 def instructors_current_classes_course_name(request):
-    # Instructors current taught course name
     classl = Enrolled_Class.objects.filter(role='Instructor',\
     email=request.session['_auth_user_id'],\
     class_id=(Class.objects.filter(\
@@ -84,8 +76,8 @@ def instructors_current_classes_course_name(request):
             course_name.append(j['course_name'])
     return course_name
 
+'''This function will zip Instructors current class id and course name '''
 def instructors_current_courses_classes(request):
-    # Instructors current class id zipped as List {}
     classl = Enrolled_Class.objects.filter(role='Instructor',\
     email=request.session['_auth_user_id'],\
     class_id=(Class.objects.filter(semester=get_semester(),\
@@ -107,12 +99,13 @@ def instructors_current_courses_classes(request):
 
 def assignment_list(request, class_id):
     #Determine if the current user is a Peer Leader for this class
-    role = Enrolled_Class.objects.get(class_id = class_id, email = request.session['_auth_user_id']).role
     email = request.session['_auth_user_id']
     enrolled_by1 = Enrolled_Class.objects.filter(email = email, class_id = class_id, role = 'Student', status = 'Enrolled').values('email')
     enrolled_by2 = Enrolled_Class.objects.filter(email = email, class_id = class_id, role = 'Instructor').values('email')
     enrolled_by3 = Enrolled_Class.objects.filter(email = email, class_id = class_id, role = 'Peer Leader').values('email')
     if enrolled_by1 or enrolled_by2 or enrolled_by3:
+        role = Enrolled_Class.objects.filter(class_id = class_id, email = email).values('role') 
+        print role
         if request.method == 'POST':        
             req_pub_date = request.POST.get('pub_date')
             req_due_date = request.POST.get('due_date')    
@@ -135,14 +128,13 @@ def assignment_list(request, class_id):
         documents = Assignment.objects.all().filter(class_id=req_class_id)
         user_role = Enrolled_Class.objects.filter(email=request.session['_auth_user_id'], \
         class_id=req_class_id).values('role')[0]['role']
-        print user_role
    
     # Render list page with the documents and the form
         return render_to_response(
             'list.html',
             {'documents': documents, 'form': form, 'class_id':req_class_id, 'role':user_role,'Role':role},context_instance=RequestContext(request))
     else:
-        return render_to_response('index.html')
+        return render_to_response('404.html')
 
 
 def createAssignment(request, classid):
@@ -155,14 +147,14 @@ def createAssignment(request, classid):
             req_pub_date = request.POST.get('pub_date')
             req_due_date = request.POST.get('due_date')    
             form = AssignmentForm(request.POST, request.FILES)
-            req_class_id = request.POST.get('classid')
+            req_class_id = classid
             if form.is_valid():                  
                 newAssignment = Assignment(assignment_name=request.POST.get('assignment_name'), \
                 class_id=Class.objects.get(class_id=classid), pub_date=req_pub_date, due_date=req_due_date, \
-	       total_grade=request.POST.get('total_grade'), assignmentfile=request.FILES['assignmentfile'])
+           total_grade=request.POST.get('total_grade'), assignmentfile=request.FILES['assignmentfile'])
                 newAssignment.save()
             print form.full_clean()
-            documents = Assignment.objects.all().filter(class_id=req_class_id)
+            documents = Assignment.objects.all().filter(class_id=req_class_id)            
             user_role = Enrolled_Class.objects.filter(email=request.session['_auth_user_id'], class_id=req_class_id).values('role')[0]['role']
             print user_role
             return HttpResponseRedirect(reverse('User:Class:assignments',kwargs={'class_id':req_class_id}))
@@ -179,7 +171,7 @@ def createAssignment(request, classid):
             'createAssignment.html',
             {'documents': assignments, 'form': form, 'classid':req_class_id, 'role':user_role},context_instance=RequestContext(request))
     else:
-        return render_to_response('index.html')
+        return render_to_response('404.html')
 
 
 @api_view(['GET'])
@@ -191,9 +183,7 @@ def getAssignmentList(request, class_id):
   
 def view_all_students_grades_for_all_assignment(request, class_id):
     user = request.session['_auth_user_id']
-    
     taught_by = Enrolled_Class.objects.get(email = user, class_id = class_id)
-    
     if taught_by.role != 'Student':
         assignment_names = []
         assignment_ids = []
@@ -230,7 +220,7 @@ def view_all_students_grades_for_all_assignment(request, class_id):
                     Homeworks[student].append(grade)
         return render_to_response('view_class_grade.html',{'class_id':class_id, 'assignments': assignment_names, 'Homeworks': Homeworks},context_instance=RequestContext(request))
     else:
-        return render_to_response('index.html')
+        return render_to_response('404.html')
 
 def view_all_assignments_grades_for_student(request, class_id):
     user = request.session['_auth_user_id']
@@ -282,7 +272,7 @@ def view_all_assignments_grades_for_student(request, class_id):
             Submitted_Homeworks[assignment].append(graded_by)
         return render_to_response('view_class_grade_forstudent.html',{'class_id':class_id, 'assignments': assignment_names, 'Submitted_Homeworks' : Submitted_Homeworks},context_instance=RequestContext(request))
     else:
-        return render_to_response('index.html')
+        return render_to_response('404.html')
 
 def download_csv(request, class_id):
     Assignments = Assignment.objects.all().filter(class_id=class_id).order_by('assignment_id')

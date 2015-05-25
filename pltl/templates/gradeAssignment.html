@@ -11,10 +11,12 @@
 {% block username %}Welcome {{request.user.fname}}{% endblock %}
 {% block logout %}    
 {%if user.is_authenticated%}
+    <li><a href = "/User/home"><strong>Home</strong></a></li>
     <li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
 {%endif%}
 {% endblock %}
 {% block content %}
+<title>PLTL | {{ assignment_name }} | Grade</title>
 
 	<div align="center" class="row" id="main">
 	        <h4>{{assignment_name}}</h4>
@@ -37,11 +39,11 @@
 
 		                        <tr>
 				            	<td>{{student.name}}</td>
-				            	<td><a target=\"_blank\" href="{{ student.homework_soln.url }}" title=\"\">Download</a></td>
+				            	<td><a target=\"_blank\" href="{{ student.homework_soln }}" title=\"\">Download</a></td>
                                 {%if student.grade == None%}
 					                <td><input type=text  size="1"  id ='Grade{{forloop.counter}}' name='Grade' maxlength="3" /></td>
                                     
-					                <td><input type=text size="50" rows='3' id = 'Feedback{{forloop.counter}}' name='Feedback' /></td>
+					                <td><input type=text size="50" id = 'Feedback{{forloop.counter}}' name='Feedback' /></td>
 					                <td><button type='submit' class="radius button success medium"  id='Submit{{forloop.counter}}'onclick=submitGrade("{{forloop.counter}}")>Save</button></td>
 				                
 				                {%elif role == 'Peer Leader' and student.graded_by == 'Instructor'%}

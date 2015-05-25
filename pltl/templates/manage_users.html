@@ -2,16 +2,17 @@
 {% load staticfiles %}
 {% block linkscript %}
     <link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
-    <script src="{% static "js/Assignment.js" %}"></script>
+    <!--<script src="{% static "js/Assignment.js" %}"></script>-->
 {% endblock %}
 {% block username %}Welcome {{request.user.fname}}{% endblock %}
 {% block logout %}    
 {%if user.is_authenticated%}
+    <li><a href = "/User/home"><strong>Home</strong></a></li>
     <li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
 {%endif%}
 {% endblock %}
 {% block content %}
-<p>{{ show }}</p>
+<title>PLTL | {{ class_id }} | Manage</title>
 {% if show %}
 
 <div align="left">
@@ -73,7 +74,19 @@
                     <td><input type='submit' class="radius button success medium" id="btnNew" value="Peer Leader" name="make_peer_leader"></td> 
                     <td><select name="student_leader">
                         {% for p in peer_leaders %}
-                             <option value='{{ p.email }}'>{{ p.get_full_name }}</option>
+                        {% for enroll in enrolled %}
+                            {% if enroll.email == e %}
+                            {% if enroll.peer_leader != None %}
+                            {% if enroll.peer_leader == p %}
+                            <option value='{{ enroll.peer_leader }}' selected>{{ enroll.peer_leader.get_full_name }}</option>
+                            {% else %}
+                            <option value='{{ p.email }}'>{{ p.get_full_name }}</option>
+                             {% endif %}
+                             {% else %}
+                            <option value='{{ p.email }}'>{{ p.get_full_name }}</option>
+                             {% endif %}
+                             {% endif %}
+                        {% endfor %}
                         {% endfor %}
                     </select>
                     <input type='submit' class="radius button success medium" id="btnNew" value="Add" name="student_led"></td>

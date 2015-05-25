@@ -6,14 +6,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import unittest
 
-class PLTLLogin(unittest.TestCase):
+class PLTLSearchClass(unittest.TestCase):
 	def setUp(self):
     		self.driver = webdriver.Firefox()
     		self.driver.maximize_window()
     		self.driver.get("http://127.0.0.1:8081/")
 
 	def test_search_class_for_user(self):
-                driver = self.driver
+            driver = self.driver
     		loginButton = driver.find_element_by_id("loginButton")
     		loginButton.click()
     		WebDriverWait(driver, 100).until(

@@ -44,7 +44,7 @@ def homework_submission(request, ass_id):
                 homework_name = home.homework_soln.name[index+1:]
         return render_to_response('homework.html',{'ass_info': ass_info, 'ass_name': ass_name, 'form': form , 'homework_info' : homework_info, 'homework_name' : homework_name, 'ass_id': ass_id},context_instance=RequestContext(request))
     else:
-        return render_to_response('index.html')
+        return render_to_response('404.html')
 
 def homework_submissions_for_particular_assignment(request,assignment_id):
     role = instructor_or_leader(request,assignment_id)
@@ -67,7 +67,8 @@ def homework_submissions_for_particular_assignment(request,assignment_id):
         students[submission.submitted_by]['email'] = submission.submitted_by
         students[submission.submitted_by]['name']  = User.objects.get(email = submission.submitted_by).get_full_name()
         students[submission.submitted_by]['grade'] = submission.grade
-        students[submission.submitted_by]['homework_soln'] = submission.homework_soln
+        students[submission.submitted_by]['homework_soln'] = submission.homework_soln.url
+        
         students[submission.submitted_by]['feedback'] = submission.feedback
         students[submission.submitted_by]['graded_by'] = submission.graded_by
     
@@ -78,6 +79,7 @@ def homework_submissions_for_particular_assignment(request,assignment_id):
                                                    'assignment_name' : assignment_name,'role':role } )
 
 def submit_grade(request, students,assignment_id,role):
+
     email = request.POST.get('email')
     grade = request.POST.get('Grade')
     feedback = request.POST.get('Feedback')
@@ -85,13 +87,13 @@ def submit_grade(request, students,assignment_id,role):
     homework = Homework.objects.get(assignment_id=assignment_id, submitted_by = email)
     homework.grade = grade
     homework.feedback = feedback 
-    
     homework.graded_by = role
     homework.save()
     
     #Since grades and feedback have already been retrieved, update to reflect the changes.
     students[email]['grade'] = grade
     students[email]['feedback'] = feedback
+
 
     return HttpResponse(json.dumps(students),content_type = 'application/json')
 
@@ -102,5 +104,3 @@ def instructor_or_leader(request,assignment_id):
         return 'Instructor'
     else:
         return 'Peer Leader'
-
-    

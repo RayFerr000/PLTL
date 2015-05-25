@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
-<title>PLTL | Welcome </title>   
 {% block linkscript %}
 <link rel="stylesheet" href="{% static "css/font-awesome.css" %}"></link>
 <!--<link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>-->
@@ -44,6 +43,7 @@
 {%endif%}
 {% endblock %}
 {% block content%}
+<title>PLTL | {{ class_id }}</title>
 <div id='assignmentListSection'>
 <div align="center" class"row" id="classHomeTitle">
    <h1>Class : {{class_id}}</h1>    
@@ -54,7 +54,7 @@
       <table id="assignmentListDetails" class="display" cellspacing="0" width="100%"></table>
    </div>
    <div id="buttonsDiv" class="row">
-      {%if Role == "Instructor" %}	
+      {%if role == "Instructor" %}	
          
          {% csrf_token %}
             <input type="submit" class="radius button default medium" value="Upload Assignment" onclick = redirect() />
@@ -62,11 +62,11 @@
             <input type="submit" class="radius button default medium" id="manage"value="Manage Students" onclick=mydirect() />
             &nbsp;&nbsp;&nbsp;
             <input type="submit" class="radius button default medium" value="View All Grades" onclick = "redirect_view_all_class_grades()"/> 
-         {%elif Role == "Peer Leader"%}
+         {%elif role == "Peer Leader"%}
             <input type=hidden id = 'isPeerLeader'>
-            <input type="submit" class="radius button success medium" value="View All Grades" onclick = "redirect_view_all_class_grades()"/>
-         {%elif Role == "Student"%} 
-            <input type="submit" class="radius button success medium"  value="View All Grades" onclick = "redirect_view_all_grades()" />
+            <input type="submit" class="radius button default medium" value="View All Grades" onclick = "redirect_view_all_class_grades()"/>
+         {%elif role == "Student"%} 
+            <input type="submit" class="radius button default medium"  value="View All Grades" onclick = "redirect_view_all_grades()" />
                
       {%endif%}
      

@@ -51,14 +51,14 @@ INSTALLED_APPS = (
     'Assignment',
     'Homework',	
 )
-'''
+
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 NOSE_ARGS = [
     '--with-coverage',
     '--cover-package=Assignment, Class, Course, Enrolled_Class, Homework, User',
 ]
-'''
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

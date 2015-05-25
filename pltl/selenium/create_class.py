@@ -10,12 +10,12 @@ class PLTLCreateClass(unittest.TestCase):
 	def setUp(self):
     		self.driver = webdriver.Firefox()
     		self.driver.maximize_window()
-    		self.driver.get("http://127.0.0.1:8081/")
+    		self.driver.get("http://127.0.0.1:8000/")
 
 	def test_create_class_for_instructor(self):
                 driver = self.driver
-    		loginButton = driver.find_element_by_id("loginButton")
-    		loginButton.click()
+    		signUpButton = driver.find_element_by_id("loginButton")
+    		signUpButton.click()
 
     		WebDriverWait(driver, 100).until(
                		lambda driver: driver.find_element_by_xpath('.//*[@id="emailInput"]'))
@@ -26,10 +26,7 @@ class PLTLCreateClass(unittest.TestCase):
     		submitLogin = driver.find_element_by_id("submitLogin")
     		submitLogin.click()
 
-    		#assert "Search" in body.text, "Login Tested"
-    		#assert "Create" in body.text, "Login Tested"
-                '''
-		WebDriverWait(driver, 100).until(
+    		WebDriverWait(driver, 100).until(
                		lambda driver:driver.find_element_by_xpath('.//*[@id="classTab"]'))
                 create_tab = driver.find_element_by_xpath('.//*[@id="classTab"]')
                 create_tab.click()
@@ -52,34 +49,11 @@ class PLTLCreateClass(unittest.TestCase):
                 createButton.click()
                 driver.refresh()
                 alert = driver.switch_to.alert()
-                print alert.text
-		alert.accept()
-                '''
+                               
                 WebDriverWait(driver, 100).until(
                		lambda driver:driver.find_element_by_xpath('.//*[@id="createdClasses"]/tbody/tr[2]/td[1]/a'))
                 classExisting = driver.find_element_by_xpath('.//*[@id="createdClasses"]/tbody/tr[2]/td[1]/a')
-                print classExisting.text
-                classExisting.click()               
-                '''
-                uploadAssignment = driver.find_element_by_xpath('.//*[@id="uploadAssignmentButton"]')
-                uploadAssignment.click()
-                WebDriverWait(driver, 100).until(
-               		lambda driver:driver.find_element_by_xpath('.//*[@id="id_assignment_name"]'))
-                uploadAssignmentName = driver.find_element_by_xpath('.//*[@id="id_assignment_name"]')
-                uploadAssignmentName.send_keys("aaaselenium_test")
-                uploadAssignmentName = driver.find_element_by_xpath('.//*[@id="id_total_grade"]')
-                uploadAssignmentName.send_keys("20")
-                elem = driver.find_element_by_xpath('.//*[@id="id_assignmentfile"]')
-		elem.send_keys("/tmp/temp.txt")'''
-                createAssignment = driver.find_element_by_xpath('.//*[@id="create"]')
-                createAssignment.click()
-                driver.refresh()
-                
-                WebDriverWait(driver, 100).until(
-               		lambda driver:driver.find_element_by_xpath('.//*[@id="assignmentListDetails"]/tbody/tr[1]/td[1]/a'))
-                assignment_created = driver.find_element_by_xpath('.//*[@id="assignmentListDetails"]/tbody/tr[1]/td[1]/a')
-                print '----------------------'+assignment_created.text
-                #assert "csc102Spring2015selenium" in class_created
+                assert classname in classExisting             
 	def tearDown(self):
     		self.driver.close()
 

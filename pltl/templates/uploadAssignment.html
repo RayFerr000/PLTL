@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block linkscript %}
-<link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>
+<title>PLTL | Upload Assignment</title>
 <link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
 <script src="{% static "js/Assignment.js" %}"></script>
 <script>
@@ -20,6 +20,7 @@
 {%endif%}
 {% endblock %}
 {% block content %}
+
 <div id='assignmentSection'>
 <div id="classHomeTitle">
    Class : {{class_id}}    

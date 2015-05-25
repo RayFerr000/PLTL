@@ -23,33 +23,88 @@ class AssignmentTestCase(unittest.TestCase):
         assignment = Assignment.objects.get(assignment_id=01)
         self.assertEqual(myclass.class_id, assignment.class_id.class_id)
     
-#    def test_valid_assignment_save(self):
-#        User.objects.create(fname='Micheal', lname='Grossberg', email='mgross@email.com', password='goat')
-#        Course.objects.create(course_id='csc004', course_name='data structure')
-#        course1 = Course.objects.get(course_id='csc004')
-#        Class.objects.create(class_id='CS102', course_id=course1, semester='Fall', year='2015')
-#        myclass = Class.objects.get(class_id='CS102', course_id='csc004', semester='Fall', year='2015')
-#        Enrolled_Class.objects.create(email=User.objects.get(email='mgross@email.com'), class_id=Class.objects.get(class_id='CS102'), role='Instructor')
-#        number_of_assignments = Assignment.objects.count()
-#        request = HttpRequest()
-#        request.method = 'POST'
-#        request.POST['assignment_name'] = 'assignment test'        
-#        request.POST['pub_date'] = date.today()
-#        request.POST['due_date'] = date.today()+timedelta(days=8)
-#        request.POST['total_grade'] = 50
-#        file_object = open("test-data/hw1.pdf", 'r')#("pltl/test-data/hw1.pdf", 'r')
-#        request.FILES['assignmentfile'] = File(file_object)
-#        request = HttpRequest()
-#        engine = import_module(settings.SESSION_ENGINE)
-#        session_key = None        
-#        request.session = engine.SessionStore(session_key)
-#        request.method = 'POST'        
-#        request.session['_auth_user_id'] = 'mgross@email.com'
-#       
-#        response = assignment_list(request, myclass.class_id)
-#        file_object.close()
-#        self.assertEqual(number_of_assignments+1, Assignment.objects.count())
-#   
+    def test_valid_assignment_save(self):
+        User.objects.create(fname='Micheal', lname='Grossberg', email='mgross@email.com', password='goat')
+        Course.objects.create(course_id='csc004', course_name='data structure')
+        course1 = Course.objects.get(course_id='csc004')
+        Class.objects.create(class_id='CS102', course_id=course1, semester='Fall', year='2015')
+        myclass = Class.objects.get(class_id='CS102', course_id='csc004', semester='Fall', year='2015')
+        Enrolled_Class.objects.create(email=User.objects.get(email='mgross@email.com'), class_id=Class.objects.get(class_id='CS102'), role='Instructor')
+        
+        number_of_assignments = Assignment.objects.count()
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['assignment_name'] = 'assignment test'        
+        request.POST['pub_date'] = date.today()
+        request.POST['due_date'] = date.today()+timedelta(days=8)
+        request.POST['total_grade'] = 50
+        file_object = open("test-data/hw1.pdf", 'r')#("pltl/test-data/hw1.pdf", 'r')
+        request.FILES['assignmentfile'] = File(file_object)
+        request = HttpRequest()
+        engine = import_module(settings.SESSION_ENGINE)
+        session_key = None        
+        request.session = engine.SessionStore(session_key)
+        request.method = 'POST'        
+        request.session['_auth_user_id'] = 'mgross@email.com'
+       
+        response = createAssignment(request, 'CS102')
+        file_object.close()
+        self.assertTrue(number_of_assignments+1, Assignment.objects.count())
+        
+    def test_student_unable_create_assignment(self):
+        User.objects.create(fname='Prajakta', lname='Bavikar', email='praj@email.com', password='goat')
+        Course.objects.create(course_id='csc005', course_name='recent trends')
+        course1 = Course.objects.get(course_id='csc005')
+        Class.objects.create(class_id='CS103', course_id=course1, semester='Fall', year='2015')
+        myclass = Class.objects.get(class_id='CS103', course_id='csc005', semester='Fall', year='2015')
+        Enrolled_Class.objects.create(email=User.objects.get(email='praj@email.com'), class_id=Class.objects.get(class_id='CS103'), role='Student')
+        
+        number_of_assignments = Assignment.objects.count()
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['assignment_name'] = 'assignment test'        
+        request.POST['pub_date'] = date.today()
+        request.POST['due_date'] = date.today()+timedelta(days=8)
+        request.POST['total_grade'] = 50
+        file_object = open("test-data/hw1.pdf", 'r')#("pltl/test-data/hw1.pdf", 'r')
+        request.FILES['assignmentfile'] = File(file_object)
+        request = HttpRequest()
+        engine = import_module(settings.SESSION_ENGINE)
+        session_key = None        
+        request.session = engine.SessionStore(session_key)
+        request.method = 'POST'        
+        request.session['_auth_user_id'] = 'praj@email.com'       
+        response = createAssignment(request, 'CS103')
+        file_object.close()
+        self.assertTrue(number_of_assignments, Assignment.objects.count())
+
+    def test_peerleader_unable_create_assignment(self):
+        User.objects.create(fname='Samsoon', lname='Tarin', email='tar@email.com', password='goat')
+        Course.objects.create(course_id='csc006', course_name='operating system')
+        course1 = Course.objects.get(course_id='csc006')
+        Class.objects.create(class_id='CS104', course_id=course1, semester='Fall', year='2015')
+        myclass = Class.objects.get(class_id='CS104', course_id='csc006', semester='Fall', year='2015')
+        Enrolled_Class.objects.create(email=User.objects.get(email='tar@email.com'), class_id=Class.objects.get(class_id='CS104'), role='Student')        
+        number_of_assignments = Assignment.objects.count()
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['assignment_name'] = 'assignment test'        
+        request.POST['pub_date'] = date.today()
+        request.POST['due_date'] = date.today()+timedelta(days=8)
+        request.POST['total_grade'] = 50
+        file_object = open("test-data/hw1.pdf", 'r')#("pltl/test-data/hw1.pdf", 'r')
+        request.FILES['assignmentfile'] = File(file_object)
+        request = HttpRequest()
+        engine = import_module(settings.SESSION_ENGINE)
+        session_key = None        
+        request.session = engine.SessionStore(session_key)
+        request.method = 'POST'        
+        request.session['_auth_user_id'] = 'praj@email.com'       
+        response = createAssignment(request, 'CS103')
+        file_object.close()
+        self.assertTrue(number_of_assignments, Assignment.objects.count())
+
+
 #    def test_invalid_assignment_save(self):
 #        User.objects.create(fname='Micheal', lname='Grossberg', email='gross@email.com', password='goat')        
 #        Course.objects.create(course_id='csc005', course_name='artificial intelligance')

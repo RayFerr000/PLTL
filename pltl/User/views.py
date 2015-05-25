@@ -71,8 +71,8 @@ def logout(request):
     auth.logout(request)
     return render(request, 'index.html')
 
+''' This function will create class taking course id from course table '''
 def create_class(request):
-    # Create class taking course id from course table
     sem = get_semester
     year = datetime.now().year
     if request.method == 'POST':
@@ -93,13 +93,12 @@ def create_class(request):
     'courses': allCourses(), 'form': form},
     context_instance=RequestContext(request))
 
+''' This function will search, drop and register class '''
 def search_classes(request):
-    # search, drop and register for class
     sem = get_semester
     year = datetime.now().year
     if 'class_id' in request.GET and request.GET['class_id']:
         srch = request.GET['class_id']
-        # returns search result
         classes = Class.objects.filter(class_id=srch).values()
         # return course name of the searched class
         course_name = Course.objects.filter(course_id=(Class.objects.filter(
@@ -108,7 +107,6 @@ def search_classes(request):
         class_des = Class.objects.filter(
         class_id=srch).values('class_description', 'class_id')
         class_details = Class.objects.filter(class_id=srch).values()
-        # if search returns empty string
         if len(classes) == 0:
             label = 'NoRecordFound'
         if len(classes) != 0:
@@ -150,7 +148,16 @@ def search_classes(request):
         class_id=drop), status='Registered', role='Student')
         drop_temp.update(status='')
         label = 'drop'
-        return render(request, 'home.html', {'label':label, 'sem':sem,
+        enrollstudent = Enrolled_Class.objects.filter(
+        email=request.session['_auth_user_id'],
+        class_id=drop, status='Enrolled').values('class_id')
+        if len(enrollstudent) == 0:
+            label2 = 'none'
+        if len(enrollstudent) != 0:
+            label2= 'yes'
+        return render(request, 'home.html', {'label':label,
+        'label2': label2,
+        'sem':sem,
         'year': year,
         'inscourses': instructors_current_courses_classes(request),
         'courses': allCourses(),
@@ -158,8 +165,8 @@ def search_classes(request):
     else:
         return HttpResponse('Please submit a search term.')
 
+''' This function will update class details if exists update else insert '''
 def update_class_details(request):
-    # instructor update class details
     sem = get_semester
     year = datetime.now().year
     class_Id = request.POST.get('updateClass')
@@ -254,6 +261,11 @@ def remove(request, show, class_id, enrolled, registered_students, enrolled_stud
         if request.POST.get("email") == student.email.email:
             student.role = 'Student'
             student.status = 'Registered'
+            if student.peer_leader != None:
+                for leader in enrolled:
+                    if leader.email == student.peer_leader:
+                        leader.students_led.remove(student.email)
+            student.peer_leader = None
             student.full_clean()
             student.save()
     for student in enrolled_students:
@@ -283,6 +295,10 @@ def student_led(request, show, class_id, enrolled, registered_students, enrolled
         if request.POST.get("student_leader") == leader.email.email:
             for student in enrolled:
                 if request.POST.get("email") == student.email.email:
+                    if student.peer_leader != None:
+                        for other_leader in enrolled:
+                            if other_leader.email == student.peer_leader:
+                                other_leader.students_led.remove(student.email)
                     leader.students_led.add(student.email)
                     student.peer_leader = leader.email
                     leader.full_clean()

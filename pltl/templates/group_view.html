@@ -7,11 +7,12 @@
 {% block username %}Welcome {{request.user.fname}}{% endblock %}
 {% block logout %}    
 {%if user.is_authenticated%}
+    <li><a href = "/User/home"><strong>Home</strong></a></li>
     <li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
 {%endif%}
 {% endblock %}
-      
 {% block content %}
+<title>PLTL | {{ class_id }} | Group View</title>      
 <div align="left">
 <form data-abide action="{% url "User:class_student_info" class_id %}">
 {% csrf_token %}
@@ -24,15 +25,17 @@
 </div>
 
 {% if group_view %}
+<h4>
 <div align="center">
 <dl>
     {% for leader, students_led in group_view.items %}
-        <dt>{{ leader.get_full_name }}</dt>
+        <dt><u>{{ leader.get_full_name }}</u></dt>
         {% for student in students_led %}
             <dd>{{ student.get_full_name }}</dd>
         {% endfor %}
     {% endfor %}
 </dl>
 </div>
+</h4>
 {% endif %}
 {% endblock %}

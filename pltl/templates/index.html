@@ -27,7 +27,7 @@
                   <a href="#" class="radius button small right" data-reveal-id="LoginModal" id="loginButton"><strong>Login</strong></a>
 
                   <div id="LoginModal" class="reveal-modal" data-reveal>
-                    <form data-abide action = " {% url "User:login"%}" method = "POST">
+                    <form data-abide action = " {% url "User:login" %}" method = "POST">
                       {% csrf_token%}
                       <h4>Log In</h4>
                       <hr/>
@@ -57,7 +57,7 @@
                       <div class="row">
                         <div class="large-9 columns">
                           <ul class="inline-list left">
-                            <li><a href="#">Forgot your password?</a></li>
+                            <!--<li><a href="#">Forgot your password?</a></li>-->
                           </ul>
                         </div>
                       </div>
@@ -116,7 +116,7 @@
                             <br />         
                             <button class="radius button submit small" onclick=''><strong>Sign Up</strong></button>
                             <br />
-                            <small>Sign in with <a href="#">Facebook</a>, <a href="#">Google</a>, or <a href="#">Twitter</a>.</small>
+                            <!--<small>Sign in with <a href="#">Facebook</a>, <a href="#">Google</a>, or <a href="#">Twitter</a>.</small>-->
                           </form>
                         </div>
                 

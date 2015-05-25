@@ -3,7 +3,7 @@ from django.conf import settings
 from django.utils.importlib import import_module
 from django.http import HttpRequest
 from User.models import User
-from User.views import user_signup_save, login
+from User.views import user_signup_save, login, class_student_info
 from User.admin import make_staff
 
 class UserTests(TestCase):
@@ -74,3 +74,4 @@ class UserTests(TestCase):
         make_staff(admin, request, queryset)
         #Make sure is_staff has been changed
         self.assertEqual(User.objects.get(email='rferr@gmail.com').is_staff, True)
+

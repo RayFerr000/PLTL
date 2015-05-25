@@ -1,16 +1,3 @@
-#assignmentSection .tabs.vertical {
-width:100%;
-max-width: 100%;
-}
-
-#assignmentSection  > .row {
-	width:100%;
-	max-width: 100%;
-	margin-top: 10px;
-}
-#assignmentSection .row  .large-6.columns.name-field{
-float:left;
-}
 
 div.dataTables_filter label {
 /* float: right; */
@@ -94,11 +81,12 @@ margin-left: 12.3125rem !important;
 }
 
 #buttonsDiv{
-position: absolute;
-margin-left: auto;
-margin-right: auto;
-bottom: 100px;
-left: 850px;
+padding: 30px;
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
+justify-content: center;
+align-items: center;
 }
 
 #createButtons{
@@ -120,5 +108,5 @@ left :270px;
 footer{
 position: absolute !important;
 bottom: 20px !important;
-left: 150px;
+left: 250px;
 } 

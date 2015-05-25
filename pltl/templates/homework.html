@@ -2,17 +2,18 @@
 {% load staticfiles %}
 {% block title %} PLTL | Homework Submission{% endblock %}
 {% block linkscript %}
-    <link rel="stylesheet" href="{% static "css/assignment.css" %}"></link>
     <link rel="stylesheet" href="{% static "css/ui.css" %}"></link>
     <script src="{% static "js/Assignment.js" %}"></script>
 {% endblock %}
 {% block username %}Welcome {{request.user.fname}}{% endblock %}
 {% block logout %}    
 {%if user.is_authenticated%}
+    <li><a href = "/User/home"><strong>Home</strong></a></li>
     <li><a href = " {% url 'logout'%}"><strong> logout</strong></a></li>
 {%endif%}
 {% endblock %}
 {% block content %}
+<title>PLTL | Homework Submission </title>
 <ul class="nice tabs-content contained">
   <div class="row">
     <table>
