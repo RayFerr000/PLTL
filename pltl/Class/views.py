@@ -56,7 +56,7 @@ def instructors_current_classes(request):
 def student_current_class_status(request):
     student_class_status = Enrolled_Class.objects.filter(
     email=request.session['_auth_user_id']).exclude(
-    status='').values('class_id', 'status')
+    status='').values('class_id','status')
     return student_class_status
 
 def instructors_current_classes_course_name(request):

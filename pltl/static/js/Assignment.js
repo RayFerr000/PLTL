@@ -5,7 +5,7 @@ jQuery(document).ready(function ($) {
 	$("#id_pub_date").fdatepicker(); */
 	$("#id_due_date").fdatepicker({ format: 'yyyy-mm-dd'}).fdatepicker("setDate", new Date()+7);  
 
- 	console.log("before");
+
      
      var urlchunks = window.location.href.split('/');
      var classid = urlchunks[urlchunks.length - 2];
@@ -16,40 +16,44 @@ jQuery(document).ready(function ($) {
    
    method: "GET"
  }).done(function(response) {
-  console.log(classid+"-------------"+response);
-  var $dt =  $("#assignmentListDetails").dataTable({
-   "aaData": response,
-    "aaSorting": [],
-   "draw": 1,
-   "columnDefs": [
-    { "width": "30%", "targets": 0}, {"sClass": "nameClass", "aTargets": [ 0 ] }
-  ],
-   "aoColumns": [
+  try{
+    var $dt =  $("#assignmentListDetails").dataTable({
+     "aaData": response,
+      "aaSorting": [],
+     "draw": 1,
+     "columnDefs": [
+      { "width": "30%", "targets": 0}, {"sClass": "nameClass", "aTargets": [ 0 ] }
+    ],
+     "aoColumns": [
 
-  {
-  "mData":"assignment_name",  
-  "sTitle": "Assignment",
-  "mRender": function(data, type, val) { 
-        if($('#manage').length == 1 || $('#isPeerLeader').length == 1){
-          return'<a href="/Class/Assignment/' +val.assignment_id+'/Grade">' + val.assignment_name + '</a>'
-        }
-        else                      
-          return '<a href="/Homework/' +val.assignment_id+ '">' + val.assignment_name + '</a>';             
-    }
-   },
-  {
-  "mData":"due_date",
-  "sTitle": "Due Date"
-   },
-   {
-  "mData":"total_grade",
-  "sTitle": "Grade"
-   }]
+    {
+    "mData":"assignment_name",  
+    "sTitle": "Assignment",
+    "mRender": function(data, type, val) { 
+          if($('#manage').length == 1 || $('#isPeerLeader').length == 1){
+            return'<a href="/Class/Assignment/' +val.assignment_id+'/Grade">' + val.assignment_name + '</a>'
+          }
+          else                      
+            return '<a href="/Homework/' +val.assignment_id+ '">' + val.assignment_name + '</a>';             
+      }
+     },
+    {
+    "mData":"due_date",
+    "sTitle": "Due Date"
+     },
+     {
+    "mData":"total_grade",
+    "sTitle": "Grade"
+     }]
 
+   });
+  }
+  catch(TypeError){
+    
+  }
  });
- });
 
-    console.log("after");  
+ 
   
 
 

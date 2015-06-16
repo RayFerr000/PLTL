@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import redirect, render_to_response, RequestContext
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
 from User.models import User
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib import auth
 from django.core.mail import send_mail
 from django.conf import settings
@@ -15,6 +16,8 @@ from Course.models import Course, allCourses
 from Class.views import instructors_current_courses_classes
 from Class.views import student_current_class_status
 from Enrolled_Class.models import Enrolled_Class
+from django.core import serializers
+import json
 
 def user_signup_save(request):
     fname = request.POST.get('fname')
@@ -47,25 +50,23 @@ def login(request):
         user = auth.authenticate(email=email, password=password)
 
     elif request.session['_auth_user_id']:
-        # Instructors Current class and course will be generated on pageload
-        sem = get_semester
-        year = datetime.now().year
-        return render_to_response('home.html', {'sem':sem, 'year':year,
-        'inscourses':instructors_current_courses_classes(request),
-        'student_class_status':student_current_class_status(request),
-        'courses':allCourses()}, context_instance=RequestContext(request))
+        return JsonResponse({'success':True})
 
+    
     if user is not None:
         auth.login(request, user)
-        # Instructors Current class and course will be generated on pageload
-        sem = get_semester
-        year = datetime.now().year
-        return render_to_response('home.html', {'sem':sem, 'year': year,
-        'inscourses': instructors_current_courses_classes(request),
-        'student_class_status': student_current_class_status(request),
-        'courses': allCourses()}, context_instance=RequestContext(request))
+        
+        return JsonResponse({'success':True})
+
     else:
-        return HttpResponse("invalid, not logged in")
+        return JsonResponse({'success':False})
+
+def homepage(request):
+    
+    return render_to_response('home.html', {'sem':get_semester(), 'year':datetime.now().year,
+    'inscourses':instructors_current_courses_classes(request),
+    'student_class_status':student_current_class_status(request),
+    'courses':allCourses()}, context_instance=RequestContext(request))
 
 def logout(request):
     auth.logout(request)

@@ -40,14 +40,14 @@ u.save()
 course = Course.objects.create(course_id='CSC 102', course_name='Intro to Computer Science')
 course.full_clean()
 
-b = Class.objects.create(class_id='X101', course_id=course, semester='Spring', year='2015', class_description='An introduction to Computer Science')
+b = Class.objects.create(class_id='X101', course_id=course, semester='Summer', year='2015', class_description='An introduction to Computer Science')
 b.full_clean()
 
 #Create course CSC 202 and class X201 of that course
 course = Course.objects.create(course_id='CSC 202', course_name='Intro to Programming')
 course.full_clean()
 
-c = Class.objects.create(class_id='X201', course_id=course, semester='Spring', year='2015', class_description='Programming basics in Python')
+c = Class.objects.create(class_id='X201', course_id=course, semester='Summer', year='2015', class_description='Programming basics in Python')
 c.full_clean()
 
 #Create an assignment in the class X201
